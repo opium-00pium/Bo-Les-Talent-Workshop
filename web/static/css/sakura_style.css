@@ -1,0 +1,401 @@
+body {
+    /* overflow: hidden; */ /* 您应该已经根据之前的建议移除了这一行或改了 */
+    /* height: 600px;   */ /* 您应该已经根据之前的建议移除了这一行或改了 */
+    min-height: 100vh;   /* 保持这个，让body至少有视窗那么高 */
+    background: transparent !important; /* 改为透明，!important确保覆盖其他可能设置 */
+    margin: 0;
+    /* position: relative; */ /* 可以考虑添加，有时有助于子元素的z-index定位，但可能不是必需的 */
+}
+#sakura {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;  /* 或者 100vw */
+    height: 100%; /* 或者 100vh */
+    z-index: -10; /* 确保它在最底层 */
+    pointer-events: none; /* 防止画布拦截鼠标点击等事件 */
+}
+
+  canvas {
+    padding: 0;
+    margin: 0;
+  }
+
+  div.btnbg {
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
+
+  #text {
+    position: absolute;
+    text-align: center;
+    z-index: 999;
+    width: 100%;
+    height: 100px;
+  }
+
+  #text>.span {
+    font-weight: 700;
+    font-size: 30px;
+    color: #E2B2AD;
+    margin-top: 22%;
+  }
+
+
+
+  .title {
+    font-size: 30px;
+    color: rgb(223, 189, 216);
+    margin-top: 10px;
+  }
+
+  .last {
+    margin-top: 22%;
+    font-size: 17px;
+    color: dimgrey;
+    margin-left: 90%;
+  }
+.jumbotron h3 {
+    color: #000000 !important; /* 深黑色 */
+}
+
+.search.bar7 button[type="submit"] {
+    /* ... 保留或调整 width, height, background-image, background-repeat, background-position, border ... */
+    background-color: #6A0DAD !important; /* 主紫色 */
+    /* 确保有足够的空间显示图标，或者图标本身是紫色的 */
+}
+
+.search.bar7 button[type="submit"]:hover {
+    background-color: #4B0082 !important; /* 深紫色 */
+}
+  /* --- 紫色主题样式 --- */
+
+/* 1. 全局字体颜色 */
+body, p, .caption p, .caption span, .container h3 { /* 针对主要文本元素 */
+    color: #4B0082 !important; /* 深紫色文字 */
+}
+
+/* 2. 导航栏 */
+.navbar-default .navbar-brand,
+.navbar-default .navbar-nav > li > a {
+    color: #4B0082 !important; /* 导航链接文字深紫色 */
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #6A0DAD !important; /* 导航链接悬停/激活时用标准紫色 */
+    background-color: transparent !important; /* 确保背景透明以显示樱花 */
+}
+.navbar-default {
+    background-color: rgba(230, 230, 250, 0.3) !important; /* 淡紫色半透明背景，可按需调整透明度或颜色 */
+    border-color: transparent !important;
+}
+.navbar-toggle .icon-bar {
+    background-color: #4B0082 !important; /* 移动端导航按钮的横线颜色 */
+}
+
+
+/* 3. Jumbotron 区域 */
+.jumbotron {
+    background-color: rgba(106, 13, 173, 0.2) !important; /* Jumbotron 半透明紫色背景 (标准紫色的20%透明度) */
+}
+.jumbotron h3 { /* 已被全局规则覆盖，但可以单独指定 */
+    color: #000000 !important; /* 更深的紫色，确保在半透明背景上清晰 */
+}
+.jumbotron .search p { /* 确保搜索框提示文字颜色 */
+    color: #4B0082 !important;
+}
+
+
+/* 4. 按钮 (主要按钮，如查看详情、登录、注册等) */
+.btn.btn-primary {
+    background-color: #6A0DAD !important; /* 标准紫色背景 */
+    border-color: #4B0082 !important;   /* 深紫色边框 */
+    color: #ffffff !important;          /* 白色文字 */
+}
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:active {
+    background-color: #4B0082 !important; /* 深紫色背景 (悬停/激活) */
+    border-color: #301934 !important;   /* 更深的紫色边框 */
+    color: #ffffff !important;
+}
+/* 如果有其他类型的按钮 (btn-default, btn-success等)，也需要类似地修改 */
+
+
+/* 5. 标签页 (伯乐热榜, 伯乐知心, 名家荐语) */
+.nav-tabs > li > a {
+    color: #4B0082 !important; /* 未激活标签页文字深紫色 */
+    background-color: rgba(255, 255, 255, 0.5) !important; /* 半透明白色背景 */
+    border-color: #ddd #ddd transparent !important;
+}
+.nav-tabs > li > a:hover {
+    color: #6A0DAD !important; /* 悬停时标准紫色文字 */
+    background-color: rgba(220, 220, 250, 0.7) !important; /* 悬停时浅紫色半透明背景 */
+    border-color: #eee #eee #ddd !important;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+    color: #ffffff !important;            /* 激活标签页白色文字 */
+    background-color: #6A0DAD !important; /* 激活标签页标准紫色背景 */
+    border: 1px solid #6A0DAD !important;
+    border-bottom-color: transparent !important;
+}
+
+/* 6. 书籍卡片 (Thumbnail) */
+.thumbnail {
+    background-color: rgba(230, 230, 250, 0.6) !important; /* 示例：淡紫色半透明背景 (薰衣草色系) */
+    border: 1px solid rgba(75, 0, 130, 0.3) !important; /* 深紫色半透明边框 */
+}
+.thumbnail .caption p, .thumbnail .caption span {
+    color: #301934 !important; /* 卡片内文字使用更深的紫色以保证清晰度 */
+}
+
+/* 7. 搜索框 (来自 search.css 的 .bar7) - 优化版 */
+div.search.bar7 { /* 样式应用到外层 div.search.bar7 */
+    display: flex !important; /* 让外层 div 成为 flex 容器 */
+    align-items: center !important;
+    border: 2px solid #6A0DAD !important;
+    border-radius: 25px !important; /* 整体圆角 */
+    background: rgba(255, 255, 255, 0.7) !important; /* 半透明背景 */
+    overflow: hidden !important; /* 配合 border-radius 裁剪内部元素 */
+    padding: 0 !important;
+    height: 40px; /* 定义搜索框整体高度，可根据您的设计调整 */
+    box-sizing: border-box;
+}
+
+.search.bar7 form {
+    display: flex !important;
+    align-items: center !important; /* 垂直居中表单内的元素 */
+    width: 100% !important;         /* 表单占据全部宽度 */
+    height: 100% !important;        /* 表单占据全部高度 */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/*
+  重要的改动：我们不再对 <p> 标签应用 flex 或边框等样式。
+  如果 <p> 标签导致了不期望的布局，可以尝试移除它，
+  或者给它 `display: contents;` 让其在布局上“消失”，
+  将其子元素（input 和 button）直接暴露给父级 form 的 flex 布局。
+  或者直接确保 form 的子元素就是 input 和 button。
+  鉴于您的HTML结构是 form > p > input/button，我们将这样处理：
+*/
+.search.bar7 form > p {
+    display: flex !important; /* 让 p 元素也成为 flex 容器 */
+    flex-grow: 1 !important;  /* 让 p 元素填满 form */
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+}
+
+.search.bar7 input[type="text"] {
+    flex-grow: 1 !important; /* 输入框占据可用空间 */
+    height: 100% !important; /* 填满父容器 p 的高度 */
+    padding: 0 12px !important; /* 调整内边距，确保文字不贴边 */
+    border: none !important; /* 移除输入框自身的边框 */
+    background: transparent !important; /* 背景透明 */
+    color: #4B0082 !important; /* 输入文字深紫色 */
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0 !important; /* 输入框自身不需要圆角，由外层div.search.bar7控制 */
+    font-size: 14px; /* 可调整字体大小 */
+    box-sizing: border-box !important;
+}
+
+.search.bar7 button[type="submit"] {
+    width: 45px !important;  /* 按钮宽度 */
+    height: 110% !important; /* 填满父容器 p 的高度 */
+    flex-shrink: 0; /* 防止按钮被压缩 */
+    background-color: #6A0DAD !important; /* 标准紫色背景 */
+    background-image: url("../img/search_icon.png") !important; /* 确保路径和文件名正确 */
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: 20px 20px !important; /* 图标显示大小，根据实际图标调整 */
+    border: none !important; /* 移除按钮自身的边框 */
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    border-radius: 0 !important; /* 按钮自身不需要圆角 */
+    text-indent: -9999px; /* 隐藏按钮内可能存在的文字（如果仅用图标） */
+    box-sizing: border-box !important;
+}
+
+.search.bar7 button[type="submit"]:hover {
+    background-color: #4B0082 !important; /* 深紫色悬停背景 */
+}
+
+
+/* 8. 登录/注册链接（导航栏右上角） */
+.navbar-nav.navbar-right li a { /* 已被上面导航栏规则覆盖，但可以再强调 */
+    color: #4B0082 !important;
+}
+.navbar-nav.navbar-right li a:hover {
+    color: #6A0DAD !important;
+}
+.navbar-nav.navbar-right li a .glyphicon-shopping-cart {
+    color: #4B0082 !important; /* 购物车图标颜色 */
+}
+.navbar-nav.navbar-right li a:hover .glyphicon-shopping-cart {
+    color: #6A0DAD !important;
+}
+
+/* 9. 如果有分页组件 */
+.pagination > li > a, .pagination > li > span {
+    color: #6A0DAD !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid #ddd !important;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    background-color: #6A0DAD !important;
+    border-color: #6A0DAD !important;
+    color: white !important;
+}
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+    color: #4B0082 !important;
+    background-color: #eee !important;
+    border-color: #ddd !important;
+}
+
+/* --- Styles for Login Page (Login.html) --- */
+
+/* Login panel styling */
+.login-page-container .row.thumbnail.center {
+    background-color: rgba(245, 240, 250, 0.8) !important; /* 非常浅的淡紫色，增加不透明度 */
+    padding: 25px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(106, 13, 173, 0.5) !important; /* 紫色边框，增加不透明度 */
+    margin-top: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Login page H1 title */
+.login-page-container .row.thumbnail.center h1 {
+    color: #301934 !important; /* 深紫色标题 */
+    margin-top: 0; /* 移除默认的h1上边距，如果面板有padding */
+    margin-bottom: 30px !important;
+    font-size: 26px !important; /* 合理的标题大小 */
+    font-weight: 500;
+}
+
+/* Form general styling */
+.login-page-container .form-horizontal {
+    font-size: 14px; /* 基础字体大小 */
+}
+
+.login-page-container .form-horizontal .form-group {
+    margin-left: -15px; /* 抵消 Bootstrap .row 的负边距 */
+    margin-right: -15px;
+    margin-bottom: 20px; /* 增加表单项之间的间距 */
+}
+
+/* Control labels (用户名, 密码) */
+.login-page-container .form-horizontal .control-label {
+    color: #4B0082 !important; /* 深紫色文字 */
+    font-size: 14px !important; /* 确保字体大小 */
+    font-weight: normal !important;
+    padding-top: 8px !important; /* 确保垂直对齐 */
+    text-align: right; /* Bootstrap .form-horizontal 默认 */
+    line-height: 1.42857143; /* Bootstrap 默认 */
+    /* white-space: nowrap; /* 暂时移除，观察是否是它导致文字垂直排列 */
+}
+
+/* Input fields */
+.login-page-container .form-control {
+    width: 100%;
+    height: 40px !important; /* 明确高度 */
+    padding: 8px 12px !important; /* 合适的内边距 */
+    font-size: 15px !important; /* 确保输入字体大小 */
+    line-height: 1.5;
+    color: #4B0082 !important; /* 输入文字颜色 */
+    background-color: #ffffff !important; /* 可选用白色背景，或者非常浅的半透明 */
+    border: 1px solid #8c58aa !important; /* 紫色系边框 */
+    border-radius: 5px !important; /* 圆角 */
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075); /* 轻微内阴影 */
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.login-page-container .form-control::placeholder {
+    color: #9a73b5 !important; /* 紫色系占位符文字 */
+    opacity: 1;
+}
+
+.login-page-container .form-control:focus {
+    border-color: #4B0082 !important; /* 深紫色焦点边框 */
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(106, 13, 173, 0.6) !important; /* 紫色焦点光晕 */
+}
+
+/* Checkbox area */
+.login-page-container .checkbox {
+    padding-top: 7px; /* 尝试对齐 */
+    margin-bottom: 0;
+}
+.login-page-container .checkbox label {
+    color: #4B0082 !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    padding-left: 25px; /* 为checkbox留出空间 */
+    position: relative; /* 使得内部的input可以绝对定位 */
+    min-height: 20px; /* 确保可点击区域 */
+    display: inline-block; /* 确保label包裹内容 */
+}
+.login-page-container .checkbox input[type="checkbox"] {
+    position: absolute;
+    margin-left: -20px;
+    margin-top: 3px; /* 根据实际情况微调垂直对齐 */
+}
+
+/* Login Button */
+.login-page-container .btn.btn-success.btn-block {
+    background-color: #6A0DAD !important;
+    border-color: #4B0082 !important;
+    color: #ffffff !important;
+    padding: 10px 16px !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    border-radius: 5px !important;
+    height: 42px !important; /* 明确按钮高度 */
+}
+
+.login-page-container .btn.btn-success.btn-block:hover,
+.login-page-container .btn.btn-success.btn-block:focus,
+.login-page-container .btn.btn-success.btn-block:active {
+    background-color: #4B0082 !important;
+    border-color: #301934 !important;
+}
+
+/* Error message styling */
+.login-error-message {
+    color: #a94442 !important;
+    background-color: #f2dede !important;
+    border-color: #ebccd1 !important;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* 确保 #text 和 .btnbg 不会干扰登录表单 */
+#text {
+    z-index: -9 !important; /* 确保在内容之下，樱花画布之上 */
+    /* 其他 #text 样式可能也需要调整，例如，如果它有不透明背景或固定内容 */
+}
+div.btnbg {
+    z-index: -9 !important; /* 同上 */
+}

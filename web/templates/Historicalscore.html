@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>品读足迹 - 伯乐识才荐读坊</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Flat-UI/dist/css/flat-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sakura_style.css') }}">
+
+    <style>
+        /* Specific styles for Historical Score page, integrated with sakura_style.css */
+        body {
+            /* Sakura style already handles background and min-height */
+        }
+
+        .historical-scores-panel { /* Applied to the main content panel */
+            background-color: rgba(245, 240, 250, 0.85) !important; /* Light purple, slightly more opaque */
+            padding: 25px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(106, 13, 173, 0.5) !important;
+            margin-top: 40px; /* Consistent top margin */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .historical-scores-panel h1 {
+            color: #301934 !important; /* Deep purple title */
+            margin-bottom: 30px !important;
+            font-size: 26px !important;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .score-header-row {
+            background-color: rgba(106, 13, 173, 0.6) !important; /* Header row background: Standard purple, semi-transparent */
+            color: #ffffff !important; /* Header text color: white */
+            margin-bottom: 10px;
+            padding: 10px 0;
+            border-radius: 5px; /* Optional: rounded corners for header */
+        }
+
+        .score-list .list-group-item {
+            background-color: rgba(230, 230, 250, 0.7) !important; /* Lighter lavender for items, semi-transparent */
+            border: 1px solid rgba(106, 13, 173, 0.3) !important; /* Subtle purple border */
+            color: #4B0082 !important; /* Deep purple text for items */
+            margin-bottom: 8px; /* Space between items */
+            border-radius: 5px; /* Optional: rounded corners for items */
+            transition: background-color 0.3s ease;
+        }
+
+        .score-list .list-group-item:hover {
+            background-color: rgba(200, 190, 220, 0.8) !important; /* Darker lavender on hover */
+            cursor: pointer;
+        }
+
+        /* Ensure text within items is styled correctly */
+        .score-list .list-group-item p {
+            white-space: nowrap;
+            word-wrap: break-word; /* Should be normal for multi-line, but nowrap is present */
+            word-break: break-all; /* Use with caution, break-word might be better */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #4B0082 !important; /* Ensure p tag text color */
+            margin-bottom: 0; /* Remove default p margin if it affects layout */
+        }
+         .score-list .list-group-item div { /* For direct div children like score and ID */
+             color: #4B0082 !important;
+         }
+
+
+        .line-center { /* Utility class from original file */
+            line-height: 50px; /* Adjust if item height changes */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+         .score-list .list-group-item .line-center{ /* Specific to items */
+            line-height: normal; /* Override general line-height for flex alignment */
+            min-height: 50px; /* Ensure items have some height */
+         }
+
+
+        /* Styling for the "查看详情" button inside list items */
+        .score-list .btn.btn-primary {
+            background-color: #6A0DAD !important;
+            border-color: #4B0082 !important;
+            color: #ffffff !important;
+            padding: 6px 8px !important; /* 减少左右内边距，给文字更多空间 */
+            font-size: 14px !important;
+            min-width: 85px !important;   /* 设置最小宽度以容纳 "查看详情" */
+            text-align: center !important; /* 确保文字在按钮内居中 */
+            display: inline-block;      /* 确保 min-width 生效 */
+            line-height: normal;      /* 重置可能影响垂直居中的line-height */
+            box-sizing: border-box;   /* 确保 padding 和 border 不会增加元素的总宽度/高度之外 */
+            vertical-align: middle; /* 尝试改善垂直对齐 */
+        }
+
+        .score-list .btn.btn-primary:hover,
+        .score-list .btn.btn-primary:focus {
+            background-color: #4B0082 !important;
+            border-color: #301934 !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .historical-scores-panel {
+                padding: 15px !important;
+                margin-top: 20px;
+            }
+            .historical-scores-panel h1 {
+                font-size: 22px !important;
+                margin-bottom: 20px !important;
+            }
+            .score-header-row {
+                display: none; /* Hide header row on small screens, rely on item layout */
+            }
+            .score-list .list-group-item > div { /* Stack columns on mobile */
+                width: 100% !important;
+                text-align: left !important;
+                line-height: normal !important;
+                padding: 5px 10px;
+                justify-content: flex-start;
+            }
+            .score-list .list-group-item .line-center::before { /* Add pseudo-labels for mobile */
+                font-weight: bold;
+                margin-right: 8px;
+            }
+            .score-list .list-group-item div.col-sm-3:nth-child(1)::before { content: "编号: "; }
+            .score-list .list-group-item div.col-sm-2:nth-child(2)::before { content: "名称: "; }
+            .score-list .list-group-item div.col-sm-2:nth-child(3)::before { content: "作者: "; }
+            .score-list .list-group-item div.col-sm-2:nth-child(4)::before { content: "评分: "; }
+
+            .score-list .list-group-item div.col-sm-3:last-child { /* Center button on mobile */
+                text-align: center !important;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                 justify-content: center;
+            }
+             .score-list .list-group-item div.col-sm-3:last-child::before {
+                content: ""; /* No pseudo-label for actions column */
+            }
+        }
+
+    </style>
+    <script>
+        // Original JavaScript functions
+        function myClick(bookid){
+           location.href = "/bookinfo?bookid="+bookid.toString();
+        }
+        // function btnClick(){ // This function was not used in the provided HTML structure
+        //     alert("btn");
+        //     return false;
+        // }
+
+        // $(function () { // This was for tabs, not present here
+        //     $('#myTabs a').click(function (e) {
+        //         $(this).tab('show')
+        //     });
+        // })
+    </script>
+
+</head>
+<body>
+    <canvas id="sakura"></canvas>
+    <div id="text">
+        <div class="last"></div>
+    </div>
+    <div class="btnbg">
+    </div>
+
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">这什么东西</span>
+                </button>
+                <a class="navbar-brand" href="/">伯乐识才荐读坊</a> </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/historical">品读足迹</a></li> <li><a href="/user">我的书斋</a></li>   </ul>
+                {% if not login %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a href="/loginForm">登录</a></li>
+                        <li><a href="/registerationForm">注册</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a> </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a>{{ useid }}</a></li>
+                        <li><a href="/logout">注销</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div></div>
+    </div>
+
+    <div class="container">
+        <div class="historical-scores-panel">
+            <h1>品读足迹</h1> <div class="row score-header-row hidden-xs"> <div class="col-sm-3 line-center">编号</div>
+                <div class="col-sm-2 line-center">名称</div>
+                <div class="col-sm-2 line-center">作者</div>
+                <div class="col-sm-2 line-center">我的评分</div>
+                <div class="col-sm-3 line-center">操作</div>
+            </div>
+
+            <div class="list-group score-list">
+                {% for book in books %}
+                <div class="list-group-item" onclick="myClick('{{book[3]}}')">
+                    <div class="row"> <div class="col-sm-3 line-center">{{book[3]}}</div>
+                        <div class="col-sm-2 line-center"><p>{{book[0]}}</p></div>
+                        <div class="col-sm-2 line-center"><p>{{book[1]}}</p></div>
+                        <div class="col-sm-2 line-center">{{book[4]}}</div>
+                        <div class="col-sm-3 line-center">
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); myClick('{{book[3]}}');">查看详情</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/vendor/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/flat-ui.min.js') }}"></script>
+
+    <script id="sakura_point_vsh" type="x-shader/x_vertex">
+        uniform mat4 uProjection;uniform mat4 uModelview;uniform vec3 uResolution;uniform vec3 uOffset;uniform vec3 uDOF;uniform vec3 uFade;attribute vec3 aPosition;attribute vec3 aEuler;attribute vec2 aMisc;varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;void main(void){vec4 pos=uModelview*vec4(aPosition+uOffset,1.);gl_Position=uProjection*pos;gl_PointSize=aMisc.x*uProjection[1][1]/-pos.z*uResolution.y*.5;pposition=pos.xyz;psize=aMisc.x;pdist=length(pos.xyz);palpha=smoothstep(0.,1.,(pdist-.1)/uFade.z);vec3 elrsn=sin(aEuler);vec3 elrcs=cos(aEuler);mat3 rotx=mat3(1.,0.,0.,0.,elrcs.x,elrsn.x,0.,-elrsn.x,elrcs.x);mat3 roty=mat3(elrcs.y,0.,-elrsn.y,0.,1.,0.,elrsn.y,0.,elrcs.y);mat3 rotz=mat3(elrcs.z,elrsn.z,0.,-elrsn.z,elrcs.z,0.,0.,0.,1.);mat3 rotmat=rotx*roty*rotz;normal=rotmat[2];mat3 trrotm=mat3(rotmat[0][0],rotmat[1][0],rotmat[2][0],rotmat[0][1],rotmat[1][1],rotmat[2][1],rotmat[0][2],rotmat[1][2],rotmat[2][2]);normX=trrotm[0];normY=trrotm[1];normZ=trrotm[2];const vec3 lit=vec3(.6917144638660746,.6917144638660746,-.20751433915982237);float tmpdfs=dot(lit,normal);if(tmpdfs<0.){normal=-normal;tmpdfs=dot(lit,normal);}diffuse=.4+tmpdfs;vec3 eyev=normalize(-pos.xyz);if(dot(eyev,normal)>0.){vec3 hv=normalize(eyev+lit);specular=pow(max(dot(hv,normal),0.),20.);}else{specular=0.;}rstop=clamp((abs(pdist-uDOF.x)-uDOF.y)/uDOF.z,0.,1.);rstop=pow(rstop,.5);distancefade=min(1.,exp((uFade.x-pdist)*.69315/uFade.y));}
+    </script>
+    <script id="sakura_point_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec3 uDOF;uniform vec3 uFade;const vec3 fadeCol=vec3(.08,.03,.06);varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;float ellipse(vec2 p,vec2 o,vec2 r){vec2 lp=(p-o)/r;return length(lp)-1.;}void main(void){vec3 p=vec3(gl_PointCoord-vec2(.5,.5),0.)*2.;vec3 d=vec3(0.,0.,-1.);float nd=normZ.z;if(abs(nd)<.0001)discard;float np=dot(normZ,p);vec3 tp=p+d*np/nd;vec2 coord=vec2(dot(normX,tp),dot(normY,tp));const float flwrsn=.258819045102521;const float flwrcs=.965925826289068;mat2 flwrm=mat2(flwrcs,-flwrsn,flwrsn,flwrcs);vec2 flwrp=vec2(abs(coord.x),coord.y)*flwrm;float r;if(flwrp.x<0.){r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.36,.96)*.5);}else{r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.58,.96)*.5);}if(r>rstop)discard;vec3 col=mix(vec3(1.,.8,.75),vec3(1.,.9,.87),r);float grady=mix(0.,1.,pow(coord.y*.5+.5,.35));col*=vec3(1.,grady,grady);col*=mix(.8,1.,pow(abs(coord.x),.3));col=col*diffuse+specular;col=mix(fadeCol,col,distancefade);float alpha=(rstop>.001)?.5-r/(rstop*2.):1.;alpha=smoothstep(0.,1.,alpha)*palpha;gl_FragColor=vec4(col*.5,alpha);}
+    </script>
+    <script id="fx_common_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="bg_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec2 uTimes;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec3 col;float c;vec2 tmpv=texCoord*vec2(.8,1.)-vec2(.95,1.);c=exp(-pow(length(tmpv)*1.8,2.));col=mix(vec3(.02,0.,.03),vec3(.96,.98,1.)*1.5,c);gl_FragColor=vec4(col*.5,1.);}
+    </script>
+    <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);gl_FragColor=vec4(col.rgb*2.-vec3(.5),1.);}
+    </script>
+    <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;uniform vec4 uBlurDir;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);col=col+texture2D(uSrc,texCoord+uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord-uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord+(uBlurDir.xy+uBlurDir.zw)*uDelta);col=col+texture2D(uSrc,texCoord-(uBlurDir.xy+uBlurDir.zw)*uDelta);gl_FragColor=col/5.;}
+    </script>
+    <script id="fx_common_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_FragColor=texture2D(uSrc,texCoord);}
+    </script>
+    <script id="pp_final_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="pp_final_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform sampler2D uBloom;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 srccol=texture2D(uSrc,texCoord)*2.;vec4 bloomcol=texture2D(uBloom,texCoord);vec4 col;col=srccol+bloomcol*(vec4(1.)+srccol);col*=smoothstep(1.,0.,pow(length((texCoord-vec2(.5))*2.),1.2)*.5);col=pow(col,vec4(.45454545454545));gl_FragColor=vec4(col.rgb,1.);gl_FragColor.a=1.;}
+    </script>
+    <script src="{{ url_for('static', filename='js/sakura.js') }}"></script>
+
+</body>
+</html>

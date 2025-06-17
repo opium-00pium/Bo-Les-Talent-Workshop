@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>搜索结果 - 伯乐识才荐读坊</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}" /> <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Flat-UI/dist/css/flat-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sakura_style.css') }}"> <style>
+       .search-results-container .row { /* Scoped to search results area */
+           margin-top: 20px;
+        }
+        /* General p tag styling for ellipsis from original file, useful for book titles/authors */
+        /* Ensure this doesn't conflict too much with sakura_style.css's p styling beyond overflow */
+        .search-results-container p.book-title,
+        .search-results-container p.book-author {
+            white-space:nowrap;
+            word-wrap:break-word; /* or normal if nowrap is desired */
+            word-break:break-all; /* use with care */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Color will be inherited from sakura_style.css or .thumbnail .caption rules */
+        }
+        .search-results-container .thumbnail .caption.center { /* .center class from original */
+            text-align: center;
+        }
+
+        /* Jumbotron specific styling if needed, sakura_style.css already styles .jumbotron */
+        .custom-jumbotron { /* Apply this class to the jumbotron div if more specific control is needed */
+             /* background-color: rgba(106, 13, 173, 0.2) !important; /* Example from sakura_style */
+        }
+        .custom-jumbotron h3 {
+            /* color: #000000 !important; /* Example from sakura_style */
+            font-weight: 500; /* Make it a bit bolder perhaps */
+        }
+
+        /* Ensure thumbnail images are responsive and centered */
+        .search-results-container .thumbnail img {
+            /* width: 60%; height: 400px; /* Original inline styles */
+            max-width: 100%; /* Make image responsive */
+            height: 300px;   /* Adjust height as preferred, or use 'auto' with aspect ratio */
+            object-fit: cover; /* Or 'contain' depending on desired image scaling */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Styling for "查询结果为空" message */
+        .no-results-message .btn-primary {
+            /* Button styling is handled by sakura_style.css */
+            margin-top: 20px;
+        }
+        .no-results-message {
+            text-align: center;
+            color: #4B0082 !important; /* Purple text for the message itself if it's just a <p> */
+        }
+
+
+    </style>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/jquery-1.11.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/flat-ui.min.js') }}"></script>
+    </head>
+<body>
+    <canvas id="sakura"></canvas>
+    <div id="text">
+        <div class="last"></div>
+    </div>
+    <div class="btnbg">
+    </div>
+
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">这什么东西</span>
+                </button>
+                <a class="navbar-brand" href="/">伯乐识才荐读坊</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/historical">品读足迹</a></li>
+                    <li><a href="/user">我的书斋</a></li>
+                </ul>
+                {% if not login %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a href="/loginForm">登录</a></li>
+                        <li><a href="/registerationForm">注册</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a>{{ useid }}</a></li>
+                        <li><a href="/logout">注销</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a> </li>
+                    </ul>
+                {% endif %}
+            </div></div>
+    </div>
+
+    <div class="container search-results-container" > <div class="jumbotron custom-jumbotron"> <h3 align="center">书籍搜索</h3> <div class="search bar7"> <form action="/search" method="GET">
+                    <p> {% if key %}
+                            <input type="text" name="keyword" value="{{key}}" placeholder="输入关键词搜索...">
+                        {% else %}
+                            <input type="text" name="keyword" placeholder="输入关键词搜索...">
+                        {% endif %}
+                         <button type="submit"></button> </p>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            {% if not books %}
+                <div class="col-xs-12 no-results-message"> <p>未能找到与 “{{ key }}” 相关的书籍。</p>
+                    <a href="/" class="btn btn-primary" role="button">返回首页</a>
+                    </div>
+            {% else %}
+                {% for book in books %}
+                <div class="col-sm-6 col-md-4 col-lg-3"> <div class="thumbnail" >
+                        <a href="/bookinfo?bookid={{book[2]}}">
+                            <img alt="{{book[0]}}" src="{{book[3]}}" >
+                        </a>
+                        <div class="caption center">
+                            <p class="book-title">{{book[0]}}</p>
+                            <p class="book-author"><span>作者:</span> <span>{{book[1]}}</span></p>
+                            <p><a href="/bookinfo?bookid={{book[2]}}" bookid="{{book[2]}}" class="btn btn-primary btn-block" role="button" >查看详情</a></p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/sakura.js') }}"></script>
+    <script id="sakura_point_vsh" type="x-shader/x_vertex">
+        uniform mat4 uProjection;uniform mat4 uModelview;uniform vec3 uResolution;uniform vec3 uOffset;uniform vec3 uDOF;uniform vec3 uFade;attribute vec3 aPosition;attribute vec3 aEuler;attribute vec2 aMisc;varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;void main(void){vec4 pos=uModelview*vec4(aPosition+uOffset,1.);gl_Position=uProjection*pos;gl_PointSize=aMisc.x*uProjection[1][1]/-pos.z*uResolution.y*.5;pposition=pos.xyz;psize=aMisc.x;pdist=length(pos.xyz);palpha=smoothstep(0.,1.,(pdist-.1)/uFade.z);vec3 elrsn=sin(aEuler);vec3 elrcs=cos(aEuler);mat3 rotx=mat3(1.,0.,0.,0.,elrcs.x,elrsn.x,0.,-elrsn.x,elrcs.x);mat3 roty=mat3(elrcs.y,0.,-elrsn.y,0.,1.,0.,elrsn.y,0.,elrcs.y);mat3 rotz=mat3(elrcs.z,elrsn.z,0.,-elrsn.z,elrcs.z,0.,0.,0.,1.);mat3 rotmat=rotx*roty*rotz;normal=rotmat[2];mat3 trrotm=mat3(rotmat[0][0],rotmat[1][0],rotmat[2][0],rotmat[0][1],rotmat[1][1],rotmat[2][1],rotmat[0][2],rotmat[1][2],rotmat[2][2]);normX=trrotm[0];normY=trrotm[1];normZ=trrotm[2];const vec3 lit=vec3(.6917144638660746,.6917144638660746,-.20751433915982237);float tmpdfs=dot(lit,normal);if(tmpdfs<0.){normal=-normal;tmpdfs=dot(lit,normal);}diffuse=.4+tmpdfs;vec3 eyev=normalize(-pos.xyz);if(dot(eyev,normal)>0.){vec3 hv=normalize(eyev+lit);specular=pow(max(dot(hv,normal),0.),20.);}else{specular=0.;}rstop=clamp((abs(pdist-uDOF.x)-uDOF.y)/uDOF.z,0.,1.);rstop=pow(rstop,.5);distancefade=min(1.,exp((uFade.x-pdist)*.69315/uFade.y));}
+    </script>
+    <script id="sakura_point_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec3 uDOF;uniform vec3 uFade;const vec3 fadeCol=vec3(.08,.03,.06);varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;float ellipse(vec2 p,vec2 o,vec2 r){vec2 lp=(p-o)/r;return length(lp)-1.;}void main(void){vec3 p=vec3(gl_PointCoord-vec2(.5,.5),0.)*2.;vec3 d=vec3(0.,0.,-1.);float nd=normZ.z;if(abs(nd)<.0001)discard;float np=dot(normZ,p);vec3 tp=p+d*np/nd;vec2 coord=vec2(dot(normX,tp),dot(normY,tp));const float flwrsn=.258819045102521;const float flwrcs=.965925826289068;mat2 flwrm=mat2(flwrcs,-flwrsn,flwrsn,flwrcs);vec2 flwrp=vec2(abs(coord.x),coord.y)*flwrm;float r;if(flwrp.x<0.){r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.36,.96)*.5);}else{r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.58,.96)*.5);}if(r>rstop)discard;vec3 col=mix(vec3(1.,.8,.75),vec3(1.,.9,.87),r);float grady=mix(0.,1.,pow(coord.y*.5+.5,.35));col*=vec3(1.,grady,grady);col*=mix(.8,1.,pow(abs(coord.x),.3));col=col*diffuse+specular;col=mix(fadeCol,col,distancefade);float alpha=(rstop>.001)?.5-r/(rstop*2.):1.;alpha=smoothstep(0.,1.,alpha)*palpha;gl_FragColor=vec4(col*.5,alpha);}
+    </script>
+    <script id="fx_common_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="bg_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec2 uTimes;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec3 col;float c;vec2 tmpv=texCoord*vec2(.8,1.)-vec2(.95,1.);c=exp(-pow(length(tmpv)*1.8,2.));col=mix(vec3(.02,0.,.03),vec3(.96,.98,1.)*1.5,c);gl_FragColor=vec4(col*.5,1.);}
+    </script>
+    <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);gl_FragColor=vec4(col.rgb*2.-vec3(.5),1.);}
+    </script>
+    <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;uniform vec4 uBlurDir;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);col=col+texture2D(uSrc,texCoord+uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord-uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord+(uBlurDir.xy+uBlurDir.zw)*uDelta);col=col+texture2D(uSrc,texCoord-(uBlurDir.xy+uBlurDir.zw)*uDelta);gl_FragColor=col/5.;}
+    </script>
+    <script id="fx_common_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_FragColor=texture2D(uSrc,texCoord);}
+    </script>
+    <script id="pp_final_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="pp_final_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform sampler2D uBloom;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 srccol=texture2D(uSrc,texCoord)*2.;vec4 bloomcol=texture2D(uBloom,texCoord);vec4 col;col=srccol+bloomcol*(vec4(1.)+srccol);col*=smoothstep(1.,0.,pow(length((texCoord-vec2(.5))*2.),1.2)*.5);col=pow(col,vec4(.45454545454545));gl_FragColor=vec4(col.rgb,1.);gl_FragColor.a=1.;}
+    </script>
+
+</body>
+</html>

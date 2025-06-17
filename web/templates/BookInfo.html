@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{ book_info.BookTitle if book_info else '书籍详情' }} - 伯乐识才荐读坊</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Flat-UI/dist/css/flat-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sakura_style.css') }}">
+
+    <style>
+        body {
+            /* Sakura style handles background */
+        }
+        .book-info-panel {
+            background-color: rgba(245, 240, 250, 0.85) !important;
+            padding: 25px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(106, 13, 173, 0.5) !important;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .book-info-panel .book-image {
+            width: 100%;
+            max-width: 300px; /* Limit image width for better layout */
+            height: auto; /* Maintain aspect ratio */
+            max-height: 450px; /* Limit image height */
+            object-fit: contain; /* Ensure image fits well, or use 'cover' */
+            display: block;
+            margin: 0 auto 20px auto; /* Center image and add bottom margin */
+            border: 1px solid rgba(106, 13, 173, 0.2);
+            border-radius: 4px;
+        }
+
+        .book-info-panel .caption h3, .book-info-panel .caption p {
+            color: #4B0082 !important; /* Deep purple text */
+        }
+        .book-info-panel .caption h3 {
+            font-size: 22px;
+            font-weight: 500;
+            margin-top: 0;
+        }
+         .book-info-panel .caption.center {
+            text-align: center;
+        }
+
+
+        .book-description h3, .rating-section h3 {
+            color: #301934 !important;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(106, 13, 173, 0.3);
+            padding-bottom: 8px;
+        }
+        .book-description p {
+            color: #4B0082 !important;
+            line-height: 1.7;
+            text-indent: 2em; /* Indent first line of paragraph */
+            /* Remove fixed line breaks from placeholder, allow natural wrapping */
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            word-break: normal !important; /* Allow breaking at words, not all */
+            overflow: visible !important;
+            text-overflow: clip !important;
+        }
+
+        /* Star Rating Styles - Themed */
+        .rating-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(106, 13, 173, 0.2);
+        }
+        .box{ /* Flex container for stars */
+            width: auto; /* Adjust width as needed, or let it be auto for centering */
+            max-width: 320px; /* Original width */
+            height:60px;
+            display:flex;
+            flex-direction: row-reverse; /* Stars fill from right to left on hover/select */
+            justify-content: center; /* Center stars if width is fixed, or space-between */
+            margin: 0 auto; /* Center the box itself */
+        }
+        
+        .box input[type="radio"]{ /* Hide actual radio buttons */
+            display:none;
+        }
+        /* SVG Star Styles */
+        .box input[type="radio"]+label>svg {
+            width: 45px; /* Adjusted size for better spacing */
+            height: 45px;
+            cursor: pointer;
+            margin: 0 5px; /* Space between stars */
+        }
+        .box input[type="radio"]+label>svg>path{
+            stroke-width:2px; /* Slightly thicker stroke for empty stars */
+            fill:none;
+            stroke: rgba(106, 13, 173, 0.5); /* Purple outline for empty stars */
+            transition: fill 0.2s ease-in-out, stroke 0.2s ease-in-out; /* Smooth transition */
+        }
+        
+        /* Hover and checked states for stars */
+        .box input[type="radio"]+label:hover>svg>path,
+        .box input[type="radio"]+label:hover~input[type="radio"]+label>svg>path,
+        .box input[type="radio"]:checked+label>svg>path,
+        .box input[type="radio"]:checked~input[type="radio"]+label>svg>path{
+            stroke-width:0px;
+            fill: #6A0DAD; /* Vibrant purple fill for selected/hovered stars */
+        }
+
+        /* No results message */
+        .no-book-info {
+            text-align: center;
+            padding: 30px;
+            color: #4B0082 !important;
+            font-size: 18px;
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="sakura"></canvas>
+    <div id="text">
+        <div class="last"></div>
+    </div>
+    <div class="btnbg">
+    </div>
+
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">这什么东西</span>
+                </button>
+                <a class="navbar-brand" href="/">伯乐识才荐读坊</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/historical">品读足迹</a></li>
+                    <li><a href="/user">我的书斋</a></li>
+                </ul>
+                {% if not login %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a href="/loginForm">登录</a></li>
+                        <li><a href="/registerationForm">注册</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a>{{ useid }}</a></li>
+                        <li><a href="/logout">注销</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div></div>
+    </div>
+
+    <div class="container">
+        <div class="book-info-panel" id="bookid" value="{{ book_info.BookID if book_info else '' }}">
+            {% if book_info %}
+            <div class="row">
+                <div class="col-md-4 col-sm-12"> <img class="book-image" src="{{ book_info.ImageM }}" alt="{{ book_info.BookTitle }}">
+                    <div class="caption center">
+                        <h3>{{ book_info.BookTitle }}</h3>
+                        <p>作者: {{ book_info.BookAuthor }}</p>
+                        <p>出版日期: {{ book_info.PublicationYear }}</p>
+                        <p style="margin-top:20px;">
+                            <a class="btn btn-primary btn-block" role="button" href="/addcart?bookid={{ book_info.BookID }}" bookid="{{ book_info.BookID }}">加入书架</a> </p>
+                    </div>
+                </div>
+                <div class="col-md-8 col-sm-12"> <div class="book-description">
+                        <h3>图书介绍</h3>
+                        <p>{{ book_info.Description if book_info.Description else "暂无详细介绍。" }}</p>
+                        </div>
+
+                    {% if login %} <div class="rating-section">
+                        <h3>为这本书评分</h3>
+                        <div class="box" id="score_" data-score="{{score}}"> <input type="radio" id="star5" value="5" name="rank" {% if score == 5 %}checked{% endif %}>
+                            <label for="star5" class="score"><svg><path id="score_5" d="M27.500,1.501 L36.069,16.899 L53.497,20.217 L41.365,33.051 L43.567,50.499 L27.500,43.032 L11.433,50.499 L13.635,33.051 L1.503,20.217 L18.931,16.899 L27.500,1.501 Z"/></svg></label>
+                            
+                            <input type="radio" id="star4" value="4" name="rank" {% if score == 4 %}checked{% endif %}>
+                            <label for="star4" class="score"><svg><path id="score_4" d="M27.500,1.501 L36.069,16.899 L53.497,20.217 L41.365,33.051 L43.567,50.499 L27.500,43.032 L11.433,50.499 L13.635,33.051 L1.503,20.217 L18.931,16.899 L27.500,1.501 Z"/></svg></label>
+                            
+                            <input type="radio" id="star3" value="3" name="rank" {% if score == 3 %}checked{% endif %}>
+                            <label for="star3" class="score"><svg><path id="score_3" d="M27.500,1.501 L36.069,16.899 L53.497,20.217 L41.365,33.051 L43.567,50.499 L27.500,43.032 L11.433,50.499 L13.635,33.051 L1.503,20.217 L18.931,16.899 L27.500,1.501 Z"/></svg></label>
+                            
+                            <input type="radio" id="star2" value="2" name="rank" {% if score == 2 %}checked{% endif %}>
+                            <label for="star2" class="score"><svg><path id="score_2" d="M27.500,1.501 L36.069,16.899 L53.497,20.217 L41.365,33.051 L43.567,50.499 L27.500,43.032 L11.433,50.499 L13.635,33.051 L1.503,20.217 L18.931,16.899 L27.500,1.501 Z"/></svg></label>
+                            
+                            <input type="radio" id="star1" value="1" name="rank" {% if score == 1 %}checked{% endif %}>
+                            <label for="star1" class="score"><svg><path id="score_1" d="M27.500,1.501 L36.069,16.899 L53.497,20.217 L41.365,33.051 L43.567,50.499 L27.500,43.032 L11.433,50.499 L13.635,33.051 L1.503,20.217 L18.931,16.899 L27.500,1.501 Z"/></svg></label>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="row">
+                <div class="col-sm-12 no-book-info">
+                    <p>抱歉，未能找到该书籍的详细信息。</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/vendor/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/flat-ui.min.js') }}"></script>
+    
+    <script type="text/javascript">
+    $(function() { // Ensure DOM is ready
+        var book_id = $("#bookid" ).attr("value"); // Keep this if it's truly book ID
+        // Function to set initial stars based on data-score attribute
+        function setInitialStars() {
+            var initialScore = $("#score_").data("score"); // Get score from data attribute
+            if (initialScore !== undefined && initialScore !== null && initialScore !== '') {
+                var scoreNum = parseInt(initialScore);
+                // Select the radio button corresponding to the score
+                $('input[name="rank"][value="' + scoreNum + '"]').prop('checked', true);
+                // Trigger the CSS update for checked stars
+                updateStarDisplay();
+            }
+        }
+
+        // Function to update star display based on checked radio
+        function updateStarDisplay() {
+            // Reset all stars first
+            $('.box input[type="radio"]+label>svg>path').css({
+                'fill': 'none',
+                'stroke': 'rgba(106, 13, 173, 0.5)', // Default empty star stroke
+                'stroke-width': '2px'
+            });
+
+            // Fill checked stars and those to their right (due to row-reverse)
+            var checkedRadio = $('.box input[type="radio"]:checked');
+            if (checkedRadio.length > 0) {
+                checkedRadio.next('label').find('svg>path').css({ // The selected star
+                    'fill': '#6A0DAD',
+                    'stroke-width': '0px'
+                });
+                checkedRadio.next('label').nextAll('input[type="radio"]+label').find('svg>path').css({ // Stars to its right
+                    'fill': '#6A0DAD',
+                    'stroke-width': '0px'
+                });
+            }
+        }
+        
+        setInitialStars(); // Set stars on page load
+
+        // Handle star click
+        $('.box').on('click', '.score label', function (e) {
+            // The click is on label, associated input gets checked automatically
+            // We just need to update display and send AJAX
+        });
+
+        $('.box input[name="rank"]').on('change', function() {
+            updateStarDisplay();
+            var score = $(this).val();
+
+            if (book_id && score) {
+                $.ajax({
+                    url:'/rating',
+                    type:"POST",
+                    data:{"rank":score,"book_id":book_id},
+                    success:function (data) {
+                        // console.log("Rating submitted: ", data);
+                        // Optionally, update the data-score attribute if needed
+                        $("#score_").data("score", score);
+                    },
+                    error: function(xhr, status, error) {
+                        // console.error("Error submitting rating: ", error);
+                    }
+                });
+            }
+        });
+    });
+    </script>
+
+    <script src="{{ url_for('static', filename='js/sakura.js') }}"></script>
+    <script id="sakura_point_vsh" type="x-shader/x_vertex">
+        uniform mat4 uProjection;uniform mat4 uModelview;uniform vec3 uResolution;uniform vec3 uOffset;uniform vec3 uDOF;uniform vec3 uFade;attribute vec3 aPosition;attribute vec3 aEuler;attribute vec2 aMisc;varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;void main(void){vec4 pos=uModelview*vec4(aPosition+uOffset,1.);gl_Position=uProjection*pos;gl_PointSize=aMisc.x*uProjection[1][1]/-pos.z*uResolution.y*.5;pposition=pos.xyz;psize=aMisc.x;pdist=length(pos.xyz);palpha=smoothstep(0.,1.,(pdist-.1)/uFade.z);vec3 elrsn=sin(aEuler);vec3 elrcs=cos(aEuler);mat3 rotx=mat3(1.,0.,0.,0.,elrcs.x,elrsn.x,0.,-elrsn.x,elrcs.x);mat3 roty=mat3(elrcs.y,0.,-elrsn.y,0.,1.,0.,elrsn.y,0.,elrcs.y);mat3 rotz=mat3(elrcs.z,elrsn.z,0.,-elrsn.z,elrcs.z,0.,0.,0.,1.);mat3 rotmat=rotx*roty*rotz;normal=rotmat[2];mat3 trrotm=mat3(rotmat[0][0],rotmat[1][0],rotmat[2][0],rotmat[0][1],rotmat[1][1],rotmat[2][1],rotmat[0][2],rotmat[1][2],rotmat[2][2]);normX=trrotm[0];normY=trrotm[1];normZ=trrotm[2];const vec3 lit=vec3(.6917144638660746,.6917144638660746,-.20751433915982237);float tmpdfs=dot(lit,normal);if(tmpdfs<0.){normal=-normal;tmpdfs=dot(lit,normal);}diffuse=.4+tmpdfs;vec3 eyev=normalize(-pos.xyz);if(dot(eyev,normal)>0.){vec3 hv=normalize(eyev+lit);specular=pow(max(dot(hv,normal),0.),20.);}else{specular=0.;}rstop=clamp((abs(pdist-uDOF.x)-uDOF.y)/uDOF.z,0.,1.);rstop=pow(rstop,.5);distancefade=min(1.,exp((uFade.x-pdist)*.69315/uFade.y));}
+    </script>
+    <script id="sakura_point_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec3 uDOF;uniform vec3 uFade;const vec3 fadeCol=vec3(.08,.03,.06);varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;float ellipse(vec2 p,vec2 o,vec2 r){vec2 lp=(p-o)/r;return length(lp)-1.;}void main(void){vec3 p=vec3(gl_PointCoord-vec2(.5,.5),0.)*2.;vec3 d=vec3(0.,0.,-1.);float nd=normZ.z;if(abs(nd)<.0001)discard;float np=dot(normZ,p);vec3 tp=p+d*np/nd;vec2 coord=vec2(dot(normX,tp),dot(normY,tp));const float flwrsn=.258819045102521;const float flwrcs=.965925826289068;mat2 flwrm=mat2(flwrcs,-flwrsn,flwrsn,flwrcs);vec2 flwrp=vec2(abs(coord.x),coord.y)*flwrm;float r;if(flwrp.x<0.){r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.36,.96)*.5);}else{r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.58,.96)*.5);}if(r>rstop)discard;vec3 col=mix(vec3(1.,.8,.75),vec3(1.,.9,.87),r);float grady=mix(0.,1.,pow(coord.y*.5+.5,.35));col*=vec3(1.,grady,grady);col*=mix(.8,1.,pow(abs(coord.x),.3));col=col*diffuse+specular;col=mix(fadeCol,col,distancefade);float alpha=(rstop>.001)?.5-r/(rstop*2.):1.;alpha=smoothstep(0.,1.,alpha)*palpha;gl_FragColor=vec4(col*.5,alpha);}
+    </script>
+    <script id="fx_common_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="bg_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec2 uTimes;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec3 col;float c;vec2 tmpv=texCoord*vec2(.8,1.)-vec2(.95,1.);c=exp(-pow(length(tmpv)*1.8,2.));col=mix(vec3(.02,0.,.03),vec3(.96,.98,1.)*1.5,c);gl_FragColor=vec4(col*.5,1.);}
+    </script>
+    <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);gl_FragColor=vec4(col.rgb*2.-vec3(.5),1.);}
+    </script>
+    <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;uniform vec4 uBlurDir;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);col=col+texture2D(uSrc,texCoord+uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord-uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord+(uBlurDir.xy+uBlurDir.zw)*uDelta);col=col+texture2D(uSrc,texCoord-(uBlurDir.xy+uBlurDir.zw)*uDelta);gl_FragColor=col/5.;}
+    </script>
+    <script id="fx_common_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_FragColor=texture2D(uSrc,texCoord);}
+    </script>
+    <script id="pp_final_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="pp_final_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform sampler2D uBloom;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 srccol=texture2D(uSrc,texCoord)*2.;vec4 bloomcol=texture2D(uBloom,texCoord);vec4 col;col=srccol+bloomcol*(vec4(1.)+srccol);col*=smoothstep(1.,0.,pow(length((texCoord-vec2(.5))*2.),1.2)*.5);col=pow(col,vec4(.45454545454545));gl_FragColor=vec4(col.rgb,1.);gl_FragColor.a=1.;}
+    </script>
+
+</body>
+</html>

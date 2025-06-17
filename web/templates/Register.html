@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>用户注册 - 伯乐识才荐读坊</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Flat-UI/dist/css/flat-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sakura_style.css') }}">
+    <style>
+        /* Styles adapted from Login.html and sakura_style.css for consistency */
+        body {
+            /* Ensures no interference with sakura from default browser styles */
+        }
+    
+        .register-page-container .thumbnail {
+            background-color: rgba(245, 240, 250, 0.8) !important; /* 登录面板背景色 */
+            padding: 35px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(106, 13, 173, 0.5) !important; /* 登录面板边框颜色 */
+            margin-top: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    
+        .register-page-container h1.text-center {
+            color: #301934 !important; /* 深紫色标题 */
+            margin-bottom: 30px !important;
+            font-size: 26px !important;
+            font-weight: 500;
+        }
+    
+        /* --- CSS RULES TO ENSURE HORIZONTAL TEXT --- */
+        /* (这些规则来自您之前的文件，确保它们仍然有效) */
+        .form-horizontal .control-label {
+            writing-mode: horizontal-tb !important;
+            -webkit-writing-mode: horizontal-tb !important;
+            -ms-writing-mode: horizontal-tb !important;
+            text-orientation: mixed !important;
+            white-space: nowrap !important;
+            text-align: right !important;
+            /* font-weight: normal !important; (由下面的规则覆盖) */
+            /* color: #34495e; (由下面的规则覆盖) */
+        }
+    
+        .btn, button { /* Target all buttons to be safe */
+            writing-mode: horizontal-tb !important;
+            -webkit-writing-mode: horizontal-tb !important;
+            -ms-writing-mode: horizontal-tb !important;
+            text-orientation: mixed !important;
+            white-space: nowrap !important; /* Prevent button text from wrapping and appearing vertical */
+        }
+        /* --- END CSS RULES FOR HORIZONTAL TEXT --- */
+    
+    
+        /* Form labels (用户名, 密码, etc.) for Register Page */
+        .register-page-container .form-horizontal .control-label {
+            color: #4B0082 !important; /* 深紫色文字 (来自 sakura_style.css 的登录页规则) */
+            font-size: 14px !important;
+            font-weight: normal !important;
+            padding-top: 8px !important; /* 对齐输入框 */
+        }
+    
+        /* Input fields for Register Page */
+        .register-page-container .form-control {
+            height: 40px !important;
+            padding: 8px 12px !important;
+            font-size: 15px !important;
+            color: #4B0082 !important; /* 输入文字颜色 */
+            background-color: #ffffff !important;
+            border: 1px solid #8c58aa !important; /* 紫色系边框 */
+            border-radius: 5px !important;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        }
+    
+        .register-page-container .form-control::placeholder {
+            color: #9a73b5 !important; /* 紫色系占位符文字 */
+            opacity: 1;
+        }
+    
+        .register-page-container .form-control:focus {
+            border-color: #4B0082 !important; /* 深紫色焦点边框 */
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(106, 13, 173, 0.6) !important; /* 紫色焦点光晕 */
+        }
+    
+        /* Register Button */
+        .register-page-container .btn.btn-success.btn-block { /* 针对注册页的 btn-success */
+            background-color: #6A0DAD !important; /* 标准紫色 (来自 sakura_style.css 的登录按钮规则) */
+            border-color: #4B0082 !important;   /* 深紫色边框 */
+            color: #ffffff !important;          /* 白色文字 */
+            padding: 10px 16px !important;
+            font-size: 16px !important;         /* 确保字体大小 */
+            line-height: 1.5 !important;        /* 确保行高 */
+            border-radius: 5px !important;
+            height: 42px !important;            /* 明确高度，同登录按钮 */
+            /* 确保文字水平显示，并且不换行 */
+            /* writing-mode 和 text-orientation 已由上面的全局 .btn 规则处理 */
+            /* white-space: nowrap; 也已由上面的全局 .btn 规则处理 */
+        }
+    
+        .register-page-container .btn.btn-success.btn-block:hover,
+        .register-page-container .btn.btn-success.btn-block:focus,
+        .register-page-container .btn.btn-success.btn-block:active {
+            background-color: #4B0082 !important; /* 深紫色背景 (悬停/激活) */
+            border-color: #301934 !important;   /* 更深的紫色边框 */
+        }
+    
+        /* Disclaimer section styling for purple theme */
+        .disclaimer-section h3 {
+            color: #301934 !important; /* 深紫色标题 */
+            margin-top: 0;
+            font-weight: 300; /* 保持和登录页标题类似的风格 */
+        }
+        .disclaimer-section p {
+            color: #4B0082 !important; /* 深紫色文字，或根据需要调整为稍浅的紫色 */
+            white-space: normal; /* 允许免责声明文字换行 */
+            word-wrap: break-word;
+            overflow: visible;
+            text-overflow: clip;
+        }
+    
+        /* Responsive adjustments (保持之前的响应式设置) */
+        @media (max-width: 767px) {
+            .form-horizontal .control-label {
+                text-align: left !important;
+                margin-bottom: 5px;
+                padding-top: 0;
+            }
+            .col-sm-offset-3 {
+                margin-left: 0;
+            }
+            .register-page-container .thumbnail {
+                margin-top: 20px;
+                padding: 20px;
+            }
+            .register-page-container h1.text-center { /* 确保h1在移动端也应用这些样式 */
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+            .disclaimer-section {
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="sakura"></canvas>
+    <div id="text">
+        <div class="last"></div>
+    </div>
+    <div class="btnbg">
+    </div>
+
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">这什么东西</span>
+                </button>
+                <a class="navbar-brand" href="/">伯乐识才荐读坊</a> </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/historical">品读足迹</a></li> <li><a href="/user">我的书斋</a></li>   </ul>
+                {% if not login %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a href="/loginForm">登录</a></li>
+                        <li><a href="/registerationForm">注册</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a> </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a>{{ useid }}</a></li>
+                        <li><a href="/logout">注销</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div></div>
+    </div>
+
+    <div class="container register-page-container"> <div class="row thumbnail"> <div class="col-sm-12">
+                 <h1 class="text-center">贤才注册</h1>
+            </div>
+            <div class="col-sm-7"> <form class="form-horizontal" action="/register" method="POST" onsubmit="return validate()">
+                    <div class="form-group">
+                        <label for="username" class="col-sm-3 control-label">贤才名</label>
+                        <div class="col-sm-9"> <input type="text" class="form-control" name="username" placeholder="贤才名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-3 control-label">密码</label>
+                        <div class="col-sm-9">
+                            <input type="password" class="form-control" name="password" placeholder="密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password2" class="col-sm-3 control-label">确认密码</label> <div class="col-sm-9">
+                            <input type="password" class="form-control" name="password2" placeholder="确认密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="age" class="col-sm-3 control-label">年龄</label> <div class="col-sm-9">
+                            <input type="text" class="form-control" name="age" id="age" placeholder="年龄"> </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9"> <button type="submit" class="btn btn-success btn-block">注册</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/vendor/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/flat-ui.min.js') }}"></script>
+
+    <script id="sakura_point_vsh" type="x-shader/x_vertex">
+        uniform mat4 uProjection;
+        uniform mat4 uModelview;
+        uniform vec3 uResolution;
+        uniform vec3 uOffset;
+        uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+        uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+
+        attribute vec3 aPosition;
+        attribute vec3 aEuler;
+        attribute vec2 aMisc; //x:size, y:fade
+
+        varying vec3 pposition;
+        varying float psize;
+        varying float palpha;
+        varying float pdist;
+
+        //varying mat3 rotMat;
+        varying vec3 normX;
+        varying vec3 normY;
+        varying vec3 normZ;
+        varying vec3 normal;
+
+        varying float diffuse;
+        varying float specular;
+        varying float rstop;
+        varying float distancefade;
+
+        void main(void) {
+            // Projection is based on vertical angle
+            vec4 pos = uModelview * vec4(aPosition + uOffset, 1.0);
+            gl_Position = uProjection * pos;
+            gl_PointSize = aMisc.x * uProjection[1][1] / -pos.z * uResolution.y * 0.5;
+
+            pposition = pos.xyz;
+            psize = aMisc.x;
+            pdist = length(pos.xyz);
+            palpha = smoothstep(0.0, 1.0, (pdist - 0.1) / uFade.z);
+
+            vec3 elrsn = sin(aEuler);
+            vec3 elrcs = cos(aEuler);
+            mat3 rotx = mat3(
+                1.0, 0.0, 0.0,
+                0.0, elrcs.x, elrsn.x,
+                0.0, -elrsn.x, elrcs.x
+            );
+            mat3 roty = mat3(
+                elrcs.y, 0.0, -elrsn.y,
+                0.0, 1.0, 0.0,
+                elrsn.y, 0.0, elrcs.y
+            );
+            mat3 rotz = mat3(
+                elrcs.z, elrsn.z, 0.0,
+                -elrsn.z, elrcs.z, 0.0,
+                0.0, 0.0, 1.0
+            );
+            mat3 rotmat = rotx * roty * rotz;
+            normal = rotmat[2];
+
+            mat3 trrotm = mat3(
+                rotmat[0][0], rotmat[1][0], rotmat[2][0],
+                rotmat[0][1], rotmat[1][1], rotmat[2][1],
+                rotmat[0][2], rotmat[1][2], rotmat[2][2]
+            );
+            normX = trrotm[0];
+            normY = trrotm[1];
+            normZ = trrotm[2];
+
+            const vec3 lit = vec3(0.6917144638660746, 0.6917144638660746, -0.20751433915982237);
+
+            float tmpdfs = dot(lit, normal);
+            if(tmpdfs < 0.0) {
+                normal = -normal;
+                tmpdfs = dot(lit, normal);
+            }
+            diffuse = 0.4 + tmpdfs;
+
+            vec3 eyev = normalize(-pos.xyz);
+            if(dot(eyev, normal) > 0.0) {
+                vec3 hv = normalize(eyev + lit);
+                specular = pow(max(dot(hv, normal), 0.0), 20.0);
+            }
+            else {
+                specular = 0.0;
+            }
+
+            rstop = clamp((abs(pdist - uDOF.x) - uDOF.y) / uDOF.z, 0.0, 1.0);
+            rstop = pow(rstop, 0.5);
+            //-0.69315 = ln(0.5)
+            distancefade = min(1.0, exp((uFade.x - pdist) * 0.69315 / uFade.y));
+        }
+    </script>
+    <script id="sakura_point_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        //precision mediump float;
+        precision highp float;
+        #endif
+
+        uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+        uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+
+        const vec3 fadeCol = vec3(0.08, 0.03, 0.06);
+
+        varying vec3 pposition;
+        varying float psize;
+        varying float palpha;
+        varying float pdist;
+
+        //varying mat3 rotMat;
+        varying vec3 normX;
+        varying vec3 normY;
+        varying vec3 normZ;
+        varying vec3 normal;
+
+        varying float diffuse;
+        varying float specular;
+        varying float rstop;
+        varying float distancefade;
+
+        float ellipse(vec2 p, vec2 o, vec2 r) {
+            vec2 lp = (p - o) / r;
+            return length(lp) - 1.0;
+        }
+
+        void main(void) {
+            vec3 p = vec3(gl_PointCoord - vec2(0.5, 0.5), 0.0) * 2.0;
+            vec3 d = vec3(0.0, 0.0, -1.0);
+            float nd = normZ.z; //dot(-normZ, d);
+            if(abs(nd) < 0.0001) discard;
+
+            float np = dot(normZ, p);
+            vec3 tp = p + d * np / nd;
+            vec2 coord = vec2(dot(normX, tp), dot(normY, tp));
+
+            //angle = 15 degree
+            const float flwrsn = 0.258819045102521;
+            const float flwrcs = 0.965925826289068;
+            mat2 flwrm = mat2(flwrcs, -flwrsn, flwrsn, flwrcs);
+            vec2 flwrp = vec2(abs(coord.x), coord.y) * flwrm;
+
+            float r;
+            if(flwrp.x < 0.0) {
+                r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.36, 0.96) * 0.5);
+            }
+            else {
+                r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.58, 0.96) * 0.5);
+            }
+
+            if(r > rstop) discard;
+
+            vec3 col = mix(vec3(1.0, 0.8, 0.75), vec3(1.0, 0.9, 0.87), r);
+            float grady = mix(0.0, 1.0, pow(coord.y * 0.5 + 0.5, 0.35));
+            col *= vec3(1.0, grady, grady);
+            col *= mix(0.8, 1.0, pow(abs(coord.x), 0.3));
+            col = col * diffuse + specular;
+
+            col = mix(fadeCol, col, distancefade);
+
+            float alpha = (rstop > 0.001)? (0.5 - r / (rstop * 2.0)) : 1.0;
+            alpha = smoothstep(0.0, 1.0, alpha) * palpha;
+
+            gl_FragColor = vec4(col * 0.5, alpha);
+        }
+    </script>
+    <script id="fx_common_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;
+        attribute vec2 aPosition;
+
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+
+        void main(void) {
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+            texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+            screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+        }
+    </script>
+    <script id="bg_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        //precision mediump float;
+        precision highp float;
+        #endif
+
+        uniform vec2 uTimes;
+
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+
+        void main(void) {
+            vec3 col;
+            float c;
+            vec2 tmpv = texCoord * vec2(0.8, 1.0) - vec2(0.95, 1.0);
+            c = exp(-pow(length(tmpv) * 1.8, 2.0));
+            col = mix(vec3(0.02, 0.0, 0.03), vec3(0.96, 0.98, 1.0) * 1.5, c);
+            gl_FragColor = vec4(col * 0.5, 1.0);
+        }
+    </script>
+    <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        //precision mediump float;
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform vec2 uDelta;
+
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+
+        void main(void) {
+          vec4 col = texture2D(uSrc, texCoord);
+          gl_FragColor = vec4(col.rgb * 2.0 - vec3(0.5), 1.0);
+        }
+    </script>
+    <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        //precision mediump float;
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform vec2 uDelta;
+        uniform vec4 uBlurDir; //dir(x, y), stride(z, w)
+
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+
+        void main(void) {
+          vec4 col = texture2D(uSrc, texCoord);
+          col = col + texture2D(uSrc, texCoord + uBlurDir.xy * uDelta);
+          col = col + texture2D(uSrc, texCoord - uBlurDir.xy * uDelta);
+          col = col + texture2D(uSrc, texCoord + (uBlurDir.xy + uBlurDir.zw) * uDelta);
+          col = col + texture2D(uSrc, texCoord - (uBlurDir.xy + uBlurDir.zw) * uDelta);
+          gl_FragColor = col / 5.0;
+        }
+    </script>
+    <script id="fx_common_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        //precision mediump float;
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform vec2 uDelta;
+
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+
+        void main(void) {
+          gl_FragColor = texture2D(uSrc, texCoord);
+        }
+    </script>
+    <script id="pp_final_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;
+        attribute vec2 aPosition;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+          texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+          screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+        }
+    </script>
+    <script id="pp_final_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        //precision mediump float;
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform sampler2D uBloom;
+        uniform vec2 uDelta;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          vec4 srccol = texture2D(uSrc, texCoord) * 2.0;
+          vec4 bloomcol = texture2D(uBloom, texCoord);
+          vec4 col;
+          col = srccol + bloomcol * (vec4(1.0) + srccol);
+          col *= smoothstep(1.0, 0.0, pow(length((texCoord - vec2(0.5)) * 2.0), 1.2) * 0.5);
+          col = pow(col, vec4(0.45454545454545)); //(1.0 / 2.2)
+
+          gl_FragColor = vec4(col.rgb, 1.0);
+          gl_FragColor.a = 1.0;
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/sakura.js') }}"></script>
+
+</body>
+</html>

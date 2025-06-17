@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>用户登录 - 伯乐识才荐读坊</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Flat-UI/dist/css/flat-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"/> <link rel="stylesheet" href="{{ url_for('static', filename='css/sakura_style.css') }}">
+    <style>
+        /* General body styling to ensure context for login form, if sakura style is too aggressive */
+        body {
+            /* If sakura styles interfere heavily, you might need to reset writing-mode here too,
+               but it's better to target specific elements first. */
+        }
+    
+        .row {
+            /* Keep specific Login.html styles if needed, or move to sakura_style.css with a specific selector */
+        }
+    
+        .login-page-container .thumbnail {
+            margin-top: 40px;
+            padding: 35px; /* Increased padding */
+            background-color: rgba(255, 255, 255, 0.92); /* Slightly more opaque for readability over animated bg */
+            border-radius: 10px; /* Softer, larger radius */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Enhanced shadow for depth */
+        }
+    
+        h1.text-center {
+            margin-bottom: 35px;
+            font-weight: 300; /* Lighter title font for a modern look */
+            color: #2c3e50; /* Dark blue-grey, often used in Flat UI themes */
+        }
+    
+        /* --- CSS RULES TO ENSURE HORIZONTAL TEXT --- */
+        /* Rule for form labels (用户名, 密码) */
+        .form-horizontal .control-label {
+            writing-mode: horizontal-tb !important;
+            -webkit-writing-mode: horizontal-tb !important; /* Safari/Chrome */
+            -ms-writing-mode: horizontal-tb !important; /* IE */
+            text-orientation: mixed !important; /* Ensures characters are upright */
+            white-space: nowrap !important; /* Prevents text from wrapping, which might appear vertical */
+            text-align: right !important;
+            font-weight: normal !important; /* Override potential bolding */
+            color: #34495e; /* Good contrast label color */
+        }
+    
+        /* --- UPDATED CHECKBOX STYLES TO FIX OVERLAP --- */
+    .checkbox label {
+        writing-mode: horizontal-tb !important;
+        -webkit-writing-mode: horizontal-tb !important;
+        -ms-writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+        display: inline-flex !important; /* Arrange checkbox and text in a row */
+        align-items: center !important; /* Vertically align them */
+        font-weight: normal !important;
+        color: #34495e; /* Text color */
+        padding-left: 0 !important; /* Label itself should not have left padding if checkbox is first */
+        white-space: nowrap !important;
+        cursor: pointer; /* Indicates the label is clickable */
+    }
+
+    .checkbox input[type="checkbox"] {
+        /* Resetting potentially conflicting Bootstrap styles */
+        position: relative !important; /* Override position:absolute if present */
+        margin-left: 0 !important;   /* Override negative margin-left if present */
+        
+        /* Spacing and alignment */
+        margin-top: 0; /* Adjust if vertical alignment is slightly off */
+        margin-bottom: 0;
+        margin-right: 8px !important; /* INCREASE THIS VALUE if text is still overlapped (e.g., 10px, 12px) */
+                                      /* This creates space AFTER the checkbox, before the "记住我" text */
+        flex-shrink: 0; /* Prevent the checkbox from shrinking if space is tight */
+        
+        /* Ensure default appearance doesn't cause sizing issues */
+        width: auto; /* Or a fixed size like 16px if needed */
+        height: auto; /* Or a fixed size like 16px if needed */
+        vertical-align: middle; /* Fallback, but align-items on label should handle it */
+    }
+    /* --- END UPDATED CHECKBOX STYLES --- */
+    
+        /* Rule for button text (登录) */
+        .btn, button { /* Target all buttons to be safe */
+            writing-mode: horizontal-tb !important;
+            -webkit-writing-mode: horizontal-tb !important;
+            -ms-writing-mode: horizontal-tb !important;
+            text-orientation: mixed !important;
+            white-space: nowrap !important; /* Prevent button text from wrapping and appearing vertical */
+        }
+        /* --- END CSS RULES FOR HORIZONTAL TEXT --- */
+    
+    
+        /* Aesthetic improvements for form elements */
+        .form-control {
+            border-radius: 5px; /* Slightly more rounded input fields */
+            border: 1px solid #bdc3c7; /* Softer border color */
+            box-shadow: none; /* Remove default inner shadow for a flatter look */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            height: 40px; /* Consistent height */
+            padding: 8px 12px; /* Adjust padding */
+        }
+        .form-control:focus {
+            border-color: #3498db; /* Flat UI blue for focus */
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25); /* Softer, larger focus glow */
+        }
+    
+        .btn-success {
+            background-color: #2ecc71; /* Flat UI success green */
+            border-color: #27ad60; /* Darker border for definition */
+            border-radius: 5px;
+            padding: 10px 15px; /* Comfortable padding */
+            font-size: 16px;
+            font-weight: 600; /* Slightly bolder text for emphasis */
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .btn-success:hover, .btn-success:focus {
+            background-color: #27ad60; /* Darken on hover/focus */
+            border-color: #27ad60;
+        }
+        .btn-block { /* Ensure block button has consistent padding */
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+    
+        /* "Remember me" and Login button row alignment */
+        .form-group .row .col-xs-7 { /* "Remember me" column */
+            display: flex;
+            align-items: center; /* Vertically center checkbox and label */
+             /* Add padding to align with input fields if labels are on top (mobile) or checkbox looks too high */
+            /* padding-top: 7px; */ /* May not be needed with align-items:center on .checkbox label */
+        }
+         .form-group .row .col-xs-7 .checkbox{ /* Ensure checkbox container itself has no odd margins */
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    
+        .login-error-message {
+            margin-bottom: 20px;
+            border-radius: 5px; /* Rounded corners for alert */
+            padding: 12px; /* Adjust padding */
+        }
+    
+        /* Original user styles (some might be redundant now but kept for review) */
+        .form-group .row .col-xs-7:first-child { /* HTML uses col-xs-7 for "记住我" container */
+            text-align: left; /* "记住我"靠左对齐 - can be removed if flex alignment on .checkbox label is sufficient */
+        }
+    
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .form-horizontal .control-label {
+                text-align: left !important; /* Labels on top for mobile */
+                margin-bottom: 5px;
+                padding-top: 0; /* Reset padding as it's now above the input */
+            }
+            .col-sm-offset-3 {
+                margin-left: 0; /* Remove offset on mobile for full width form elements */
+            }
+            .login-page-container .thumbnail {
+                margin-top: 20px;
+                padding: 20px; /* Reduce padding on smaller screens */
+            }
+            h1.text-center {
+                font-size: 24px; /* Smaller title */
+                margin-bottom: 25px;
+            }
+    
+            /* Stack "Remember me" and "Login" button */
+            .form-group .row .col-xs-7,
+            .form-group .row .col-xs-5 {
+                width: 100%; /* Make them full width */
+                text-align: center; /* Center their content */
+                margin-bottom: 15px; /* Space between stacked elements */
+            }
+            .form-group .row .col-xs-7 {
+                padding-top: 0; /* Reset padding */
+                justify-content: center; /* Ensure "Remember me" is centered */
+            }
+            .form-group .row .col-xs-5 button {
+                width: 100%; /* Full width button on small screens */
+                /* Or, for a less wide button:
+                width: auto;
+                min-width: 180px;
+                display: inline-block; */
+            }
+            .form-group .row .col-xs-5:last-child {
+                margin-bottom: 0; /* No margin for the last stacked element */
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="sakura"></canvas>
+    <div id="text">
+        <div class="last"></div>
+    </div>
+    <div class="btnbg">
+    </div>
+
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">这什么东西</span>
+                </button>
+                <a class="navbar-brand" href="/">伯乐识才荐读坊</a> </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/historical">品读足迹</a></li> <li><a href="/user">我的书斋</a></li> </ul>
+                {% if not login %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a href="/loginForm">登录</a></li>
+                        <li><a href="/registerationForm">注册</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a></li> </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a>{{ useid }}</a></li>
+                        <li><a href="/logout">注销</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a></li>
+                    </ul>
+                {% endif %}
+            </div></div>
+    </div>
+
+    <div class="container login-page-container"> <div class="row thumbnail center"> <div class="col-sm-12">
+                <h1 class="text-center" style="margin-bottom: 30px;">贤才登录</h1>
+            </div>
+            <form action="/login" method="POST" class="form-horizontal"> <div class="col-sm-8 col-sm-offset-2">
+                    {% if error %}
+                        <div class="alert alert-danger login-error-message" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="username" class="col-sm-3 control-label">贤才名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="username" placeholder="贤才名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-3 control-label">密码</label>
+                        <div class="col-sm-9">
+                            <input type="password" class="form-control" name="password" placeholder="密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-1 col-sm-15"> 
+                            <div class="row">
+                                <div class="col-xs-7"> <!-- 调整栅格给“记住我”更多空间 -->
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="remember">记住我
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-5"> <!-- 调整栅格给登录按钮空间 -->
+                                    <button type="submit" class="btn btn-success btn-block">登录</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form> 
+            <!-- 免责声明部分已被删除 -->
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/vendor/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/flat-ui.min.js') }}"></script>
+
+    <script id="sakura_point_vsh" type="x-shader/x_vertex">
+        uniform mat4 uProjection;
+        uniform mat4 uModelview;
+        uniform vec3 uResolution;
+        uniform vec3 uOffset;
+        uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+        uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+        attribute vec3 aPosition;
+        attribute vec3 aEuler;
+        attribute vec2 aMisc; //x:size, y:fade
+        varying vec3 pposition;
+        varying float psize;
+        varying float palpha;
+        varying float pdist;
+        varying vec3 normX;
+        varying vec3 normY;
+        varying vec3 normZ;
+        varying vec3 normal;
+        varying float diffuse;
+        varying float specular;
+        varying float rstop;
+        varying float distancefade;
+        void main(void) {
+            vec4 pos = uModelview * vec4(aPosition + uOffset, 1.0);
+            gl_Position = uProjection * pos;
+            gl_PointSize = aMisc.x * uProjection[1][1] / -pos.z * uResolution.y * 0.5;
+            pposition = pos.xyz;
+            psize = aMisc.x;
+            pdist = length(pos.xyz);
+            palpha = smoothstep(0.0, 1.0, (pdist - 0.1) / uFade.z);
+            vec3 elrsn = sin(aEuler);
+            vec3 elrcs = cos(aEuler);
+            mat3 rotx = mat3(1.0, 0.0, 0.0, 0.0, elrcs.x, elrsn.x, 0.0, -elrsn.x, elrcs.x);
+            mat3 roty = mat3(elrcs.y, 0.0, -elrsn.y, 0.0, 1.0, 0.0, elrsn.y, 0.0, elrcs.y);
+            mat3 rotz = mat3(elrcs.z, elrsn.z, 0.0, -elrsn.z, elrcs.z, 0.0, 0.0, 0.0, 1.0);
+            mat3 rotmat = rotx * roty * rotz;
+            normal = rotmat[2];
+            mat3 trrotm = mat3(rotmat[0][0], rotmat[1][0], rotmat[2][0], rotmat[0][1], rotmat[1][1], rotmat[2][1], rotmat[0][2], rotmat[1][2], rotmat[2][2]);
+            normX = trrotm[0];
+            normY = trrotm[1];
+            normZ = trrotm[2];
+            const vec3 lit = vec3(0.6917144638660746, 0.6917144638660746, -0.20751433915982237);
+            float tmpdfs = dot(lit, normal);
+            if(tmpdfs < 0.0) {
+                normal = -normal;
+                tmpdfs = dot(lit, normal);
+            }
+            diffuse = 0.4 + tmpdfs;
+            vec3 eyev = normalize(-pos.xyz);
+            if(dot(eyev, normal) > 0.0) {
+                vec3 hv = normalize(eyev + lit);
+                specular = pow(max(dot(hv, normal), 0.0), 20.0);
+            } else {
+                specular = 0.0;
+            }
+            rstop = clamp((abs(pdist - uDOF.x) - uDOF.y) / uDOF.z, 0.0, 1.0);
+            rstop = pow(rstop, 0.5);
+            distancefade = min(1.0, exp((uFade.x - pdist) * 0.69315 / uFade.y));
+        }
+    </script>
+    <script id="sakura_point_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+        uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+        const vec3 fadeCol = vec3(0.08, 0.03, 0.06);
+        varying vec3 pposition;
+        varying float psize;
+        varying float palpha;
+        varying float pdist;
+        varying vec3 normX;
+        varying vec3 normY;
+        varying vec3 normZ;
+        varying vec3 normal;
+        varying float diffuse;
+        varying float specular;
+        varying float rstop;
+        varying float distancefade;
+        float ellipse(vec2 p, vec2 o, vec2 r) {
+            vec2 lp = (p - o) / r;
+            return length(lp) - 1.0;
+        }
+        void main(void) {
+            vec3 p = vec3(gl_PointCoord - vec2(0.5, 0.5), 0.0) * 2.0;
+            vec3 d = vec3(0.0, 0.0, -1.0);
+            float nd = normZ.z;
+            if(abs(nd) < 0.0001) discard;
+            float np = dot(normZ, p);
+            vec3 tp = p + d * np / nd;
+            vec2 coord = vec2(dot(normX, tp), dot(normY, tp));
+            const float flwrsn = 0.258819045102521;
+            const float flwrcs = 0.965925826289068;
+            mat2 flwrm = mat2(flwrcs, -flwrsn, flwrsn, flwrcs);
+            vec2 flwrp = vec2(abs(coord.x), coord.y) * flwrm;
+            float r;
+            if(flwrp.x < 0.0) {
+                r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.36, 0.96) * 0.5);
+            } else {
+                r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.58, 0.96) * 0.5);
+            }
+            if(r > rstop) discard;
+            vec3 col = mix(vec3(1.0, 0.8, 0.75), vec3(1.0, 0.9, 0.87), r);
+            float grady = mix(0.0, 1.0, pow(coord.y * 0.5 + 0.5, 0.35));
+            col *= vec3(1.0, grady, grady);
+            col *= mix(0.8, 1.0, pow(abs(coord.x), 0.3));
+            col = col * diffuse + specular;
+            col = mix(fadeCol, col, distancefade);
+            float alpha = (rstop > 0.001)? (0.5 - r / (rstop * 2.0)) : 1.0;
+            alpha = smoothstep(0.0, 1.0, alpha) * palpha;
+            gl_FragColor = vec4(col * 0.5, alpha);
+        }
+    </script>
+    <script id="fx_common_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;
+        attribute vec2 aPosition;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+            texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+            screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+        }
+    </script>
+    <script id="bg_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec2 uTimes;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+            vec3 col;
+            float c;
+            vec2 tmpv = texCoord * vec2(0.8, 1.0) - vec2(0.95, 1.0);
+            c = exp(-pow(length(tmpv) * 1.8, 2.0));
+            col = mix(vec3(0.02, 0.0, 0.03), vec3(0.96, 0.98, 1.0) * 1.5, c);
+            gl_FragColor = vec4(col * 0.5, 1.0);
+        }
+    </script>
+    <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform vec2 uDelta;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          vec4 col = texture2D(uSrc, texCoord);
+          gl_FragColor = vec4(col.rgb * 2.0 - vec3(0.5), 1.0);
+        }
+    </script>
+    <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform vec2 uDelta;
+        uniform vec4 uBlurDir; //dir(x, y), stride(z, w)
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          vec4 col = texture2D(uSrc, texCoord);
+          col = col + texture2D(uSrc, texCoord + uBlurDir.xy * uDelta);
+          col = col + texture2D(uSrc, texCoord - uBlurDir.xy * uDelta);
+          col = col + texture2D(uSrc, texCoord + (uBlurDir.xy + uBlurDir.zw) * uDelta);
+          col = col + texture2D(uSrc, texCoord - (uBlurDir.xy + uBlurDir.zw) * uDelta);
+          gl_FragColor = col / 5.0;
+        }
+    </script>
+    <script id="fx_common_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform vec2 uDelta;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          gl_FragColor = texture2D(uSrc, texCoord);
+        }
+    </script>
+    <script id="pp_final_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;
+        attribute vec2 aPosition;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+          texCoord = aPosition.xy * 0.5 + vec2(0.5, 0.5);
+          screenCoord = aPosition.xy * vec2(uResolution.z, 1.0);
+        }
+    </script>
+    <script id="pp_final_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;
+        uniform sampler2D uBloom;
+        uniform vec2 uDelta;
+        varying vec2 texCoord;
+        varying vec2 screenCoord;
+        void main(void) {
+          vec4 srccol = texture2D(uSrc, texCoord) * 2.0;
+          vec4 bloomcol = texture2D(uBloom, texCoord);
+          vec4 col;
+          col = srccol + bloomcol * (vec4(1.0) + srccol);
+          col *= smoothstep(1.0, 0.0, pow(length((texCoord - vec2(0.5)) * 2.0), 1.2) * 0.5);
+          col = pow(col, vec4(0.45454545454545)); //(1.0 / 2.2)
+          gl_FragColor = vec4(col.rgb, 1.0);
+          gl_FragColor.a = 1.0;
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/sakura.js') }}"></script>
+
+</body>
+</html>

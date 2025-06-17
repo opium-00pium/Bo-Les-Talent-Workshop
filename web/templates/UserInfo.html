@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>我的书斋 - 伯乐识才荐读坊</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Flat-UI/dist/css/flat-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sakura_style.css') }}">
+
+    <style>
+        /* Specific styles for UserInfo page, integrated with sakura_style.css */
+        body {
+            /* Sakura style handles background */
+        }
+
+        .user-info-panel { /* Main panel for content */
+            background-color: rgba(245, 240, 250, 0.85) !important; /* Light purple, like other panels */
+            padding: 25px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(106, 13, 173, 0.5) !important;
+            margin-top: 40px;
+            margin-bottom: 40px; /* Add some bottom margin */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .user-info-panel h1 {
+            color: #301934 !important; /* Deep purple title */
+            margin-bottom: 30px !important;
+            font-size: 26px !important;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Tab styling (sakura_style.css should cover most of this) */
+        /* Ensure active tab link color contrasts with its background */
+        .user-info-panel .nav-tabs > li.active > a,
+        .user-info-panel .nav-tabs > li.active > a:hover,
+        .user-info-panel .nav-tabs > li.active > a:focus {
+            color: #ffffff !important; /* White text on active purple tab */
+            background-color: #6A0DAD !important; /* Standard purple background */
+        }
+         .user-info-panel .nav-tabs > li > a {
+            color: #4B0082 !important; /* Deep purple for inactive tab text */
+         }
+
+
+        .tab-content {
+            padding-top: 20px; /* Space between tabs and content */
+        }
+
+        /* Form styling within tabs */
+        .tab-pane .form-horizontal {
+            /* Center the col-sm-6 form container if desired, or leave as is for left alignment */
+            /* margin: 0 auto; */ /* Uncomment to center if parent .tab-pane is made full width */
+        }
+
+        .tab-pane .form-horizontal .form-group {
+            margin-bottom: 20px;
+        }
+
+        .tab-pane .form-horizontal .control-label {
+            color: #4B0082 !important; /* Deep purple for labels */
+            font-weight: normal !important;
+            font-size: 14px;
+            /* Horizontal text rules from sakura_style.css should apply */
+        }
+
+        /* Static text display in #userHome */
+        #userHome .form-group p {
+            color: #4B0082 !important;
+            font-size: 15px;
+            padding-top: 7px; /* Align with form inputs */
+            margin-bottom: 0;
+        }
+
+        /* Input fields */
+        .tab-pane .form-control {
+            height: 40px !important;
+            padding: 8px 12px !important;
+            font-size: 15px !important;
+            color: #4B0082 !important; /* Input text color */
+            background-color: #ffffff !important;
+            border: 1px solid #8c58aa !important; /* Purple-ish border */
+            border-radius: 5px !important;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        }
+
+        .tab-pane .form-control::placeholder {
+            color: #9a73b5 !important; /* Purple-ish placeholder */
+            opacity: 1;
+        }
+
+        .tab-pane .form-control:focus {
+            border-color: #4B0082 !important;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(106, 13, 173, 0.6) !important;
+        }
+
+        /* Submit buttons in forms */
+        .tab-pane .btn.btn-primary { /* Changed from btn-success to btn-primary */
+            background-color: #6A0DAD !important;
+            border-color: #4B0082 !important;
+            color: #ffffff !important;
+            padding: 10px 16px !important;
+            font-size: 16px !important;
+            line-height: 1.5 !important;
+            border-radius: 5px !important;
+            height: 42px !important;
+            /* Ensure horizontal text rendering (handled by global .btn rule in sakura_style.css) */
+            min-width: 100px; /* Ensure "提交" fits well */
+        }
+
+        .tab-pane .btn.btn-primary:hover,
+        .tab-pane .btn.btn-primary:focus {
+            background-color: #4B0082 !important;
+            border-color: #301934 !important;
+        }
+
+        /* Specific for col-sm-6 form containers */
+        .form-container-column {
+            /* If you want to center the form within the tab pane */
+             margin-left: auto;
+             margin-right: auto;
+             float: none; /* Disable float if centering with margin auto */
+             padding: 15px; /* Add some padding around the form area */
+        }
+
+
+        /* Original potentially unused styles - removed for clarity:
+        .line-center, .list-group-item, th, td, .table th, .table td
+        General .row margin style also removed as Bootstrap/panel style handles it.
+        */
+    </style>
+    <script>
+        // Tab functionality
+        $(function(){
+            $('#myTabs a').click(function (e) {
+                e.preventDefault(); // Prevent page jump
+                $(this).tab('show');
+            });
+        });
+
+        // function myClick(n){ // Not used in this page's structure
+        //     location.href = "/bookinfo";
+        // }
+        // function btnClick(){ // Not used
+        //     alert("btn");
+        //     return false;
+        // }
+    </script>
+</head>
+<body>
+    <canvas id="sakura"></canvas>
+    <div id="text">
+        <div class="last"></div>
+    </div>
+    <div class="btnbg">
+    </div>
+
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">这什么东西</span>
+                </button>
+                <a class="navbar-brand" href="/">伯乐识才荐读坊</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/historical">品读足迹</a></li>
+                    <li><a href="/user">我的书斋</a></li>
+                </ul>
+                {% if not login %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a href="/loginForm">登录</a></li>
+                        <li><a href="/registerationForm">注册</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right hidden-sm">
+                        <li><a>{{ useid }}</a></li>
+                        <li><a href="/logout">注销</a></li>
+                        <li>
+                            <a href="/order"><span class="glyphicon glyphicon-shopping-cart">识才书架</span></a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div></div>
+    </div>
+
+    <div class="container">
+        <div class="user-info-panel">
+            <h1>我的书斋</h1> <ul class="nav nav-tabs nav-justified" id="myTabs" role="tablist">
+                <li role="presentation" class="active"><a href="#userHome" aria-controls="userHome" role="tab" data-toggle="tab">个人信息</a></li>
+                <li role="presentation"><a href="#editInfo" aria-controls="editInfo" role="tab" data-toggle="tab">信息修改</a></li>
+                <li role="presentation"><a href="#editPassword" aria-controls="editPassword" role="tab" data-toggle="tab">密码修改</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="userHome">
+                    <div class="col-sm-8 form-container-column">
+                        <form class="form-horizontal"> <div class="form-group">
+                                <label class="col-sm-4 control-label">贤才名:</label>
+                                <div class="col-sm-8"><p>{{userinfo[0]}}</p></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">所在地区:</label> <div class="col-sm-8"><p>{{userinfo[1]}}</p></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">年龄:</label>
+                                <div class="col-sm-8"><p>{{userinfo[2]}}</p></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="editInfo">
+                    <div class="col-sm-8 form-container-column">
+                        <form class="form-horizontal" action="/editinfo" method="POST"> <div class="form-group">
+                                <label class="col-sm-4 control-label">贤才名:</label>
+                                <div class="col-sm-8"><p style="padding-top:7px; color:#4B0082;">{{userinfo[0]}}</p></div> </div>
+                            <div class="form-group">
+                                <label for="editLocation" class="col-sm-4 control-label">所在地区</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="editLocation" name="location" placeholder="{{ '当前: ' + userinfo[1] if userinfo[1] else '请输入所在地区' }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAge" class="col-sm-4 control-label">年龄</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="editAge" name="age" placeholder="{{ '当前: ' + userinfo[2] if userinfo[2] else '请输入年龄' }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-8">
+                                    <button type="submit" class="btn btn-primary btn-block">提交修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="editPassword">
+                   <div class="col-sm-8 form-container-column">
+                        <form class="form-horizontal" action="/editpassword" method="POST"> <div class="form-group">
+                                <label class="col-sm-4 control-label">贤才名:</label>
+                                <div class="col-sm-8"><p style="padding-top:7px; color:#4B0082;">{{userinfo[0]}}</p></div> </div>
+                            <div class="form-group">
+                                <label for="newPassword1" class="col-sm-4 control-label">新密码</label>
+                                <div class="col-sm-8">
+                                    <input type="password" class="form-control" id="newPassword1" name="password1" placeholder="请输入新密码">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword2" class="col-sm-4 control-label">确认新密码</label>
+                                <div class="col-sm-8">
+                                    <input type="password" class="form-control" id="newPassword2" name="password2" placeholder="请再次输入新密码">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-8">
+                                    <button type="submit" class="btn btn-primary btn-block">确认修改密码</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/vendor/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='Flat-UI/dist/js/flat-ui.min.js') }}"></script>
+
+    <script id="sakura_point_vsh" type="x-shader/x_vertex">
+        uniform mat4 uProjection;uniform mat4 uModelview;uniform vec3 uResolution;uniform vec3 uOffset;uniform vec3 uDOF;uniform vec3 uFade;attribute vec3 aPosition;attribute vec3 aEuler;attribute vec2 aMisc;varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;void main(void){vec4 pos=uModelview*vec4(aPosition+uOffset,1.);gl_Position=uProjection*pos;gl_PointSize=aMisc.x*uProjection[1][1]/-pos.z*uResolution.y*.5;pposition=pos.xyz;psize=aMisc.x;pdist=length(pos.xyz);palpha=smoothstep(0.,1.,(pdist-.1)/uFade.z);vec3 elrsn=sin(aEuler);vec3 elrcs=cos(aEuler);mat3 rotx=mat3(1.,0.,0.,0.,elrcs.x,elrsn.x,0.,-elrsn.x,elrcs.x);mat3 roty=mat3(elrcs.y,0.,-elrsn.y,0.,1.,0.,elrsn.y,0.,elrcs.y);mat3 rotz=mat3(elrcs.z,elrsn.z,0.,-elrsn.z,elrcs.z,0.,0.,0.,1.);mat3 rotmat=rotx*roty*rotz;normal=rotmat[2];mat3 trrotm=mat3(rotmat[0][0],rotmat[1][0],rotmat[2][0],rotmat[0][1],rotmat[1][1],rotmat[2][1],rotmat[0][2],rotmat[1][2],rotmat[2][2]);normX=trrotm[0];normY=trrotm[1];normZ=trrotm[2];const vec3 lit=vec3(.6917144638660746,.6917144638660746,-.20751433915982237);float tmpdfs=dot(lit,normal);if(tmpdfs<0.){normal=-normal;tmpdfs=dot(lit,normal);}diffuse=.4+tmpdfs;vec3 eyev=normalize(-pos.xyz);if(dot(eyev,normal)>0.){vec3 hv=normalize(eyev+lit);specular=pow(max(dot(hv,normal),0.),20.);}else{specular=0.;}rstop=clamp((abs(pdist-uDOF.x)-uDOF.y)/uDOF.z,0.,1.);rstop=pow(rstop,.5);distancefade=min(1.,exp((uFade.x-pdist)*.69315/uFade.y));}
+    </script>
+    <script id="sakura_point_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec3 uDOF;uniform vec3 uFade;const vec3 fadeCol=vec3(.08,.03,.06);varying vec3 pposition;varying float psize;varying float palpha;varying float pdist;varying vec3 normX;varying vec3 normY;varying vec3 normZ;varying vec3 normal;varying float diffuse;varying float specular;varying float rstop;varying float distancefade;float ellipse(vec2 p,vec2 o,vec2 r){vec2 lp=(p-o)/r;return length(lp)-1.;}void main(void){vec3 p=vec3(gl_PointCoord-vec2(.5,.5),0.)*2.;vec3 d=vec3(0.,0.,-1.);float nd=normZ.z;if(abs(nd)<.0001)discard;float np=dot(normZ,p);vec3 tp=p+d*np/nd;vec2 coord=vec2(dot(normX,tp),dot(normY,tp));const float flwrsn=.258819045102521;const float flwrcs=.965925826289068;mat2 flwrm=mat2(flwrcs,-flwrsn,flwrsn,flwrcs);vec2 flwrp=vec2(abs(coord.x),coord.y)*flwrm;float r;if(flwrp.x<0.){r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.36,.96)*.5);}else{r=ellipse(flwrp,vec2(.065,.024)*.5,vec2(.58,.96)*.5);}if(r>rstop)discard;vec3 col=mix(vec3(1.,.8,.75),vec3(1.,.9,.87),r);float grady=mix(0.,1.,pow(coord.y*.5+.5,.35));col*=vec3(1.,grady,grady);col*=mix(.8,1.,pow(abs(coord.x),.3));col=col*diffuse+specular;col=mix(fadeCol,col,distancefade);float alpha=(rstop>.001)?.5-r/(rstop*2.):1.;alpha=smoothstep(0.,1.,alpha)*palpha;gl_FragColor=vec4(col*.5,alpha);}
+    </script>
+    <script id="fx_common_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="bg_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform vec2 uTimes;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec3 col;float c;vec2 tmpv=texCoord*vec2(.8,1.)-vec2(.95,1.);c=exp(-pow(length(tmpv)*1.8,2.));col=mix(vec3(.02,0.,.03),vec3(.96,.98,1.)*1.5,c);gl_FragColor=vec4(col*.5,1.);}
+    </script>
+    <script id="fx_brightbuf_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);gl_FragColor=vec4(col.rgb*2.-vec3(.5),1.);}
+    </script>
+    <script id="fx_dirblur_r4_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;uniform vec4 uBlurDir;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 col=texture2D(uSrc,texCoord);col=col+texture2D(uSrc,texCoord+uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord-uBlurDir.xy*uDelta);col=col+texture2D(uSrc,texCoord+(uBlurDir.xy+uBlurDir.zw)*uDelta);col=col+texture2D(uSrc,texCoord-(uBlurDir.xy+uBlurDir.zw)*uDelta);gl_FragColor=col/5.;}
+    </script>
+    <script id="fx_common_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_FragColor=texture2D(uSrc,texCoord);}
+    </script>
+    <script id="pp_final_vsh" type="x-shader/x_vertex">
+        uniform vec3 uResolution;attribute vec2 aPosition;varying vec2 texCoord;varying vec2 screenCoord;void main(void){gl_Position=vec4(aPosition,0.,1.);texCoord=aPosition.xy*.5+vec2(.5,.5);screenCoord=aPosition.xy*vec2(uResolution.z,1.);}
+    </script>
+    <script id="pp_final_fsh" type="x-shader/x_fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+        uniform sampler2D uSrc;uniform sampler2D uBloom;uniform vec2 uDelta;varying vec2 texCoord;varying vec2 screenCoord;void main(void){vec4 srccol=texture2D(uSrc,texCoord)*2.;vec4 bloomcol=texture2D(uBloom,texCoord);vec4 col;col=srccol+bloomcol*(vec4(1.)+srccol);col*=smoothstep(1.,0.,pow(length((texCoord-vec2(.5))*2.),1.2)*.5);col=pow(col,vec4(.45454545454545));gl_FragColor=vec4(col.rgb,1.);gl_FragColor.a=1.;}
+    </script>
+    <script src="{{ url_for('static', filename='js/sakura.js') }}"></script>
+
+</body>
+</html>
