@@ -4,7 +4,7 @@ import pymysql
 import numpy as np
 
 config =  {'user': 'root',
-          'password': 'lilhuangpi0511',
+          'password': 'YOUR_MYSQL_PASSWORD',
           'port':3306,
           'host': '127.0.0.1',
           'db': 'Book',
