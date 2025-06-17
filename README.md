@@ -63,9 +63,11 @@ Rating=Rating[:5000]
 
 ## 项目启动方式：
 
+```
 1、在config.yml与read_data_save_to_mysql.py中修改mysql配置信息
 2、在code目录下使用python read_data_save_to_mysql.py导入数据
 3、在code/web目录下使用python app.py使用系统
+```
 
 ## 项目思路：
 
