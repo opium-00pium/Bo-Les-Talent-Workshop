@@ -1,40 +1,41 @@
 ------------------------------------------------------------------------------------------------
-# 智能图书推荐系统                          
+# 伯乐识才荐读坊                          
 ------------------------------------------------------------------------------------------------
 
-~~互联网访问地址[http://198.56.183.11:8080](http://198.56.183.11:8080)~~
+### 与原项目的区别
 
-数据集下载地址
-[https://github.com/ashwanidv100/Recommendation-System---Book-Crossing-Dataset/tree/master/BX-CSV-Dump](https://github.com/ashwanidv100/Recommendation-System---Book-Crossing-Dataset/tree/master/BX-CSV-Dump)
-
-
+```
+整个项目能直接现成使用
+使用了更好看的前端
+古风的设计主题
+```
 
 #### `主页`
-<img src="./image/index.jpg" width="750" height="350">
+<img src="./img/1.png" width="750" height="350">
 
 #### `搜索功能`
-<img src="./image/search.jpg" width="750" height="350">
+<img src="./img/2.png" width="750" height="350">
 
 #### `登录`
-<img src="./image/login.jpg" width="750" height="350">
+<img src="./img/3.png" width="750" height="350">
 
 #### `注册`
-<img src="./image/register.jpg" width="750" height="350">
+<img src="./img/4.png" width="750" height="350">
 
 #### `历史评分书单`
-<img src="./image/historical.jpg" width="750" height="350">
+<img src="./img/5.png" width="750" height="350">
 
 #### `书单`
-<img src="./image/userinfo.jpg" width="750" height="350">
+<img src="./img/6.png" width="750" height="350">
 
 #### `购物车`
-<img src="./image/cart.jpg" width="750" height="350">
+<img src="./img/7.png" width="750" height="350">
 
 #### `管理员 用户删除`
-<img src="./image/admin01.jpg" width="750" height="350">
+<img src="./img/8.png" width="750" height="350">
 
 #### `管理员 书籍添加删除`
-<img src="./image/admin02.jpg" width="750" height="350">
+<img src="./img/9.png" width="750" height="350">
 
 
 *  对图书数据使用tensorflow和GPU加速实现了初版的协同过滤算法
@@ -52,8 +53,6 @@ Rating=Rating[:5000]
 ```
 设置了一个切片区间，默认使用5000，你可以按你的配置修改这个参数。
 作者选择 Epoch 60000 Loss函数曲线 
-<br>
-<img src="./image/img7.png" width="350" height="250"><br>
 
 ### 功能清单
 
@@ -62,61 +61,11 @@ Rating=Rating[:5000]
 管理员权限： 删除用户，添加书籍，删除书籍。
 ```
 
-## 所需运行环境
-
-* 使用python3.6作为编程语言。使用mysql作为数据库存储.
-* 需要安装pandas,flask，pymysql.
-*　安装方式:
-```
-    pip install pandas
-    pip install flask
-    pip install pymysql
-```
-
-
-## 联系作者：
-QQ：470581985
-
-## 项目源码介绍
-
-图书推荐系统
-```
-----Flask-BookRecommend-Mysql\
-    |----data                         >这个文件夹中存放数据集，数据集比较杂乱。
-    |----image\                       
-    |----web\                        >web端 
-    |    |----logger.py               >日志记录
-    |    |----config.yml              >配置参数
-    |    |----logs                    >日志
-    |    |----app.py                  >web入口
-    |    |----utils.py                >辅助模块
-    |----CF_use_python.py            >协同过滤：CF 算法
-    |----CF_use_tensorflow.py        >使用tensorflow实现的协同过滤CF算法
-    |----read_data_save_to_mysql.py  >读取data文件夹里面的书籍存储到数据库中
-    |----README.md
-```
-
 ## 项目启动方式：
 
-数据集下载地址
-[https://github.com/ashwanidv100/Recommendation-System---Book-Crossing-Dataset/tree/master/BX-CSV-Dump](https://github.com/ashwanidv100/Recommendation-System---Book-Crossing-Dataset/tree/master/BX-CSV-Dump)
-
-* 将下载好的数据放入data文件夹下
-* 运行read_data_save_to_mysql.py文件 将数据导入到mysql中。
-  注意mysql的链接参数.默认是root,密码123456,端口是3300.如果你的不是，
-  需要修改read_data_save_to_mysql和web/config.yml文件下的mysql的配置参数。
-* 进入web文件夹,运行app.py
-* 在浏览器上访问 127.0.0.1:8080  
-
-* 使用下载数据中的UserID和其对应的Location作为账号密码登录网站。
-
-* 系统管理员的账号：admin 密码：admin 通过这个账号密码进入后台管理
-
-Example：
-* `UserID/账号`：
-    - 39027
-* `UserName/密码`：
-    - tempe, arizona, usa
+1、在config.yml与read_data_save_to_mysql.py中修改mysql配置信息
+2、在code目录下使用python read_data_save_to_mysql.py导入数据
+3、在code/web目录下使用python app.py使用系统
 
 ## 项目思路：
 
@@ -134,6 +83,3 @@ Example：
     + 离线计算好的推荐表的信息。使用到了协同过滤算法
     + 之后会做成按天更新
     + 目前的项目是实时推荐的，使用sql语句实现的
-    
-##  wx赞赏码：如果对你有用或者你需要帮你改进此项目
-<img src="https://img-blog.csdnimg.cn/20190124140409316.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjY0ODQ1,size_16,color_FFFFFF,t_70" width="300" height="350">
